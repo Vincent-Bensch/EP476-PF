@@ -1,5 +1,5 @@
 !=======================================================================
-! File chp_inp_mod.f90 contains all variables that are set by the
+! File mbp_inp_mod.f90 contains all variables that are set by the
 ! user at run-time.  There are scalar variables for physical parameters
 ! such as particle masses, and the number of particles to be used in
 ! a computation.  There are array variables that are used to set the
@@ -14,8 +14,8 @@
 ! Modified: Vincent Bensch
 !=======================================================================
 
-  MODULE chp_inp_mod
-  USE chp_kind_mod
+  MODULE mbp_inp_mod
+  USE mbp_kind_mod
   IMPLICIT NONE
 
 ! The first set defines physical parameters that may be changed to
@@ -103,13 +103,13 @@
   
 ! Namelist filenames
   
-  CHARACTER(32) :: param_nml_file="chp_param_nml"  		!Parameter namelist input 
-  CHARACTER(32) :: part_nml_file_in="chp_part_nml_in"  	!Particle namelist input 
-  CHARACTER(32) :: part_nml_file_out="chp_part_nml_out" !Particle namelist output 
+  CHARACTER(32) :: param_nml_file="mbp_param_nml"  		!Parameter namelist input 
+  CHARACTER(32) :: part_nml_file_in="mbp_part_nml_in"  	!Particle namelist input 
+  CHARACTER(32) :: part_nml_file_out="mbp_part_nml_out" !Particle namelist output 
   
 !Namelist variable assignments
   
-  NAMELIST / chp_param_nml / &			!Parameter namelist input 
+  NAMELIST / mbp_param_nml / &			!Parameter namelist input 
       ex, ey, ez, &  					!Electic Field
       bx, by, bz, & 					!Magnetic Field
       vtrap, rtrap, ztrap, & 			!Trap parameters 
@@ -117,9 +117,9 @@
 	  integrator, nstep, tolerance, &	!Integrator settings
 	  t_plot							!Plot settings
 	  
-  NAMELIST / chp_part_nml / &			!Particle namelist input/output
+  NAMELIST / mbp_part_nml / &			!Particle namelist input/output
 	  x_init, y_init, z_init, &			!Initial particle positions
 	  vx_init, vy_init, vz_init, &		!Initial particle velocities
 	  num_elecs, num_prots, num_neuts	!Particle composition
 
-  END MODULE chp_inp_mod
+  END MODULE mbp_inp_mod

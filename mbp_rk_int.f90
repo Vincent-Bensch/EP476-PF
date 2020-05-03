@@ -1,5 +1,5 @@
 !=======================================================================
-! File chp_rk_int.f90 contains student-built second-order and fourth-order
+! File mbp_rk_int.f90 contains student-built second-order and fourth-order
 ! Runge-Kutta numerical integrators. They are general purpose subroutines 
 ! that has been created for a charged partical solver, but should be 
 ! generally applicable
@@ -8,7 +8,7 @@
 !========================================================================
 
 SUBROUTINE RK2(F, NEQ, Y, T, TOUT, NUM_STEPS) !Second order Runge-Kutta
-USE chp_kind_mod
+USE mbp_kind_mod
 IMPLICIT NONE
 
 EXTERNAL :: F
@@ -38,7 +38,7 @@ END SUBROUTINE RK2
 
 
 SUBROUTINE RK4(F, NEQ, Y, T, TOUT, NUM_STEPS) !Fourth order Runge-Kutta
-USE chp_kind_mod
+USE mbp_kind_mod
 IMPLICIT NONE
 
 EXTERNAL :: F

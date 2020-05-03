@@ -1,11 +1,11 @@
 !=======================================================================
-! File chp_knd_mod.f90 contains basic parameters for variable definition
+! File mbp_knd_mod.f90 contains basic parameters for variable definition
 ! in other modules.
 !
 ! Author: Vincent Bensch
 !========================================================================
 
- MODULE chp_kind_mod
+ MODULE mbp_kind_mod
       IMPLICIT NONE
 		
       INTEGER, PARAMETER :: rknd=SELECTED_REAL_KIND(14, 100)
@@ -17,4 +17,4 @@
 	  
 	  INTEGER(KIND = iknd), PARAMETER :: i_0=0_iknd
 	  INTEGER(KIND = iknd), PARAMETER :: i_1=1_iknd
-END MODULE chp_kind_mod
+END MODULE mbp_kind_mod

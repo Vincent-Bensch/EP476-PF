@@ -1,6 +1,6 @@
 !=======================================================================
-! File chp_df_eval.f90 contains the chp_df_eval function. It is to
-! be passed to the relevant integrator function by chp_main. In the current
+! File mbp_df_eval.f90 contains the mbp_df_eval function. It is to
+! be passed to the relevant integrator function by mbp_main. In the current
 ! configuration it cannot handle time dependancy. The time vatiable is
 ! passed for forwards compatability.
 !
@@ -9,11 +9,11 @@
 
 
 
-  SUBROUTINE chp_df_eval( nsize, time, svec, dfvec )
+  SUBROUTINE mbp_df_eval( nsize, time, svec, dfvec )
   
-  USE chp_inp_mod
-  USE chp_kind_mod
-  USE chp_data_mod
+  USE mbp_inp_mod
+  USE mbp_kind_mod
+  USE mbp_data_mod
   IMPLICIT NONE
   INTEGER(iknd) :: ipart, ioff !current particle under evalutation
 
@@ -54,4 +54,4 @@
   
   RETURN
   
-  END SUBROUTINE chp_df_eval
+  END SUBROUTINE mbp_df_eval

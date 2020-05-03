@@ -1,5 +1,5 @@
 !=======================================================================
-! File chp_data_mod.f90 contains module variables that are used to
+! File mbp_data_mod.f90 contains module variables that are used to
 ! specify the properties of individual particles.
 !
 ! The contained subroutine is used to initialize the arrays.
@@ -8,9 +8,9 @@
 ! Modified: Vincent Bensch
 !=======================================================================
 
-  MODULE chp_data_mod
-  USE chp_inp_mod
-  USE chp_kind_mod
+  MODULE mbp_data_mod
+  USE mbp_inp_mod
+  USE mbp_kind_mod
   IMPLICIT NONE
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: pchrg  ! charge of each
@@ -26,17 +26,17 @@
   REAL(rknd), DIMENSION(:), POINTER :: dvptr	!Pointer for velocity derivative of current particle
   
   INTEGER(iknd) :: num_eqs !Number of equations in system, and len of sln_vec
-  REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: chp_ATOL !Absolute tolerance vector
+  REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: mbp_ATOL !Absolute tolerance vector
   REAL(rknd) :: B_mag !Total magnetic field magnitude
 
   CONTAINS
 
 !=======================================================================
-! The module subroutine chp_data_init initializes the data arrays for
+! The module subroutine mbp_data_init initializes the data arrays for
 ! the collection of particles.
 !=======================================================================
 
-  SUBROUTINE chp_data_init
+  SUBROUTINE mbp_data_init
 
   INTEGER(iknd) :: ipart, ioff
   LOGICAL  :: param_nml_exists, part_nml_in_exists !Bools to check exsistance of namelists
@@ -44,7 +44,7 @@
   REAL(rknd) :: v_part !Velocity of current particle
   
 !-----------------------------------------------------------------------
-! Read parateter namelist (filename specified in chp_inp_mod)
+! Read parateter namelist (filename specified in mbp_inp_mod)
 !-----------------------------------------------------------------------
   
   INQUIRE(FILE=param_nml_file, EXIST=param_nml_exists)
@@ -53,7 +53,7 @@
   IF (param_nml_exists) THEN
 	OPEN (UNIT=param_nml, FILE= param_nml_file, STATUS= "OLD", FORM= "FORMATTED")
     PRINT *, "Namelist opened: ", param_nml_file
-	READ (UNIT=param_nml, NML= chp_param_nml)
+	READ (UNIT=param_nml, NML= mbp_param_nml)
 	CLOSE (param_nml)
 	PRINT *, "Namelist read into memory: ", param_nml_file, NEW_LINE('A')
   ELSE
@@ -81,7 +81,7 @@
   ALLOCATE(num_prots(npart))
   ALLOCATE(num_neuts(npart))
 
-  ALLOCATE(chp_ATOL(num_eqs))
+  ALLOCATE(mbp_ATOL(num_eqs))
 !-----------------------------------------------------------------------
 ! Set ICs for allocatable arrays
 !-----------------------------------------------------------------------
@@ -99,13 +99,13 @@ num_neuts=i_0  !  Initial value: 0
 B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
    
 !-----------------------------------------------------------------------
-! Read array namelist (filename specified in chp_inp_mod)
+! Read array namelist (filename specified in mbp_inp_mod)
 !-----------------------------------------------------------------------
   
   IF (part_nml_in_exists) THEN
     OPEN (UNIT=part_nml_in, FILE= part_nml_file_in, STATUS= "OLD", FORM= "FORMATTED")
     PRINT *, "Namelist opened: ", part_nml_file_in
-	READ (UNIT=part_nml_in, NML= chp_part_nml)
+	READ (UNIT=part_nml_in, NML= mbp_part_nml)
     CLOSE (part_nml_in)
 	PRINT *, "Namelist read into memory: ", part_nml_file_in, NEW_LINE('A')
   ELSE
@@ -128,7 +128,7 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
 	ioff = 6 * ipart
 	rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
 	vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
-	tolptr => chp_ATOL(ioff-5:ioff)    !Tolerance pointer associated with current particle
+	tolptr => mbp_ATOL(ioff-5:ioff)    !Tolerance pointer associated with current particle
 	
 	rptr(1) = x_init(ipart) !Position initial conditions
 	rptr(2) = y_init(ipart)
@@ -145,15 +145,15 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
 
   ENDDO
   RETURN
-  END SUBROUTINE chp_data_init
+  END SUBROUTINE mbp_data_init
   
   
 !=======================================================================
-! The module subroutine chp_data_term reparses the final state into 
+! The module subroutine mbp_data_term reparses the final state into 
 ! the original _init variables and writes them to the output namelist
 !=======================================================================
 
-  SUBROUTINE chp_data_term
+  SUBROUTINE mbp_data_term
   
   INTEGER(iknd) :: ipart, ioff
 
@@ -178,18 +178,18 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
   ENDDO  
   
   OPEN (UNIT=part_nml_out, FILE= part_nml_file_out, STATUS= "REPLACE", FORM= "FORMATTED")
-  WRITE (UNIT=part_nml_out, NML= chp_part_nml)
+  WRITE (UNIT=part_nml_out, NML= mbp_part_nml)
   PRINT *, "Namelist written from memory: ", part_nml_file_out
   CLOSE (part_nml_out)
   RETURN
   
-  END SUBROUTINE chp_data_term
+  END SUBROUTINE mbp_data_term
  
 !=======================================================================
-! The module subroutine chp_welcome prints a welcome message to screen
+! The module subroutine mbp_welcome prints a welcome message to screen
 !=======================================================================
  
-  SUBROUTINE chp_welcome
+  SUBROUTINE mbp_welcome
   
   PRINT *, repeat(NEW_LINE('A'), 5)
   PRINT *, repeat("=", 79)
@@ -205,6 +205,6 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
   PRINT *, repeat("=", 79), NEW_LINE('A')
   
   RETURN
-  END SUBROUTINE chp_welcome
+  END SUBROUTINE mbp_welcome
   
-  END MODULE chp_data_mod
+  END MODULE mbp_data_mod

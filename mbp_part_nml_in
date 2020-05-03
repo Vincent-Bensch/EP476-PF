@@ -1,5 +1,5 @@
 !=======================================================================
-! File chp_part_nml_in is the particle array input namelist for the
+! File mbp_part_nml_in is the particle array input namelist for the
 ! EP476 charged partical solver.
 !
 ! Author: Vincent Bensch
@@ -19,7 +19,7 @@
 !	num_prots, num_neuts - Int arrays with a default value of 0
 !=======================================================================
 
-&chp_part_nml
+&mbp_part_nml
 x_init = 0.00707
 y_init = -0.00707
 

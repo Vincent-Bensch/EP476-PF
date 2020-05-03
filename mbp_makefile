@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------
-# This is the makefile for the chp_comp program.  
+# This is the makefile for the mbp_comp program.  
 # Note that lines such as these that begin with the
 # 'pound' symbol are comment lines.
 #
-# Possible targets for this descriptor file are chp_exec (the
-# default optimized executable), chp_dbg (a debugging version),
+# Possible targets for this descriptor file are mbp_exec (the
+# default optimized executable), mbp_dbg (a debugging version),
 # clean (to remove *.o), and realclean to also remove the executables.
 #
 # Author: Carl Sovinec
@@ -41,18 +41,18 @@ LIBS =  -lodepack -lblas
 # needed to build the executable.  The "\" signifies
 # that the line is continued.
 
-OBJS = chp_kind_mod.o \
-	   chp_inp_mod.o \
-       chp_data_mod.o \
-	   chp_df_eval.o \
-	   chp_rk_int.o \
-	   chp_main.o
+OBJS = mbp_kind_mod.o \
+	   mbp_inp_mod.o \
+       mbp_data_mod.o \
+	   mbp_df_eval.o \
+	   mbp_rk_int.o \
+	   mbp_main.o
 
 # This is a module-list macro.
 
-MODS = chp_kind_mod.mod \
-	   chp_inp_mod.mod \
-       chp_data_mod.mod
+MODS = mbp_kind_mod.mod \
+	   mbp_inp_mod.mod \
+       mbp_data_mod.mod
 	   
 
 #-----------------------------------------------------------------------
@@ -63,16 +63,16 @@ MODS = chp_kind_mod.mod \
 # Note that $(macro) evaluates a macro or an environment variable,
 # and the list of commands or rules follow the dependency.
 
-chp_exec : $(OBJS)
+mbp_exec : $(OBJS)
 	@echo "Creating "$@" in directory "$(PWD)"."
 	$(FLDR) -o $@ $(LDRFLAGS) $(OBJS) $(LIBDIR) $(LIBS)
 
 # The following dependency is similar, but it conditionally
 # replaces the value of FFLAGS with FFLAGS_DBG when
-# processing the rules for the target chp_dbg.
+# processing the rules for the target mbp_dbg.
 
-chp_dbg : FFLAGS = $(FFLAGS_DBG)
-chp_dbg :  $(OBJS)
+mbp_dbg : FFLAGS = $(FFLAGS_DBG)
+mbp_dbg :  $(OBJS)
 	@echo "Creating "$@" in directory "$(PWD)"."
 	$(FLDR) -o $@ $(LDRFLAGS) $(OBJS) $(LIBDIR) $(LIBS)
 
@@ -93,20 +93,20 @@ $(MODS) : %.mod : %.f90
 # A list of module dependencies ensures that module information
 # specific to a particular source is available.
 
-chp_inp_mod.o: chp_kind_mod.mod
+mbp_inp_mod.o: mbp_kind_mod.mod
 
-chp_data_mod.o: chp_kind_mod.mod
-chp_data_mod.o: chp_inp_mod.mod
+mbp_data_mod.o: mbp_kind_mod.mod
+mbp_data_mod.o: mbp_inp_mod.mod
 
-chp_rk_int.o: chp_kind_mod.mod
+mbp_rk_int.o: mbp_kind_mod.mod
 
-chp_df_eval.o: chp_kind_mod.mod
-chp_df_eval.o: chp_inp_mod.mod
-chp_df_eval.o: chp_data_mod.mod
+mbp_df_eval.o: mbp_kind_mod.mod
+mbp_df_eval.o: mbp_inp_mod.mod
+mbp_df_eval.o: mbp_data_mod.mod
 
-chp_main.o: chp_kind_mod.mod
-chp_main.o: chp_inp_mod.mod
-chp_main.o: chp_data_mod.mod
+mbp_main.o: mbp_kind_mod.mod
+mbp_main.o: mbp_inp_mod.mod
+mbp_main.o: mbp_data_mod.mod
 
 
 #-----------------------------------------------------------------------
@@ -121,6 +121,6 @@ clean:
 	@echo "Cleaned object and mod files from "$(PWD)"."
 
 realclean: clean
-	-rm chp_exec chp_dbg
+	-rm mbp_exec mbp_dbg
 	@echo "Cleaned executables from "$(PWD)"."
 

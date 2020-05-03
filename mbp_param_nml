@@ -1,5 +1,5 @@
 !=======================================================================
-! File chp_param_nml is the parameter user-defined namelist for the
+! File mbp_param_nml is the parameter user-defined namelist for the
 ! EP476 charged partical solver.
 !
 ! Author: Vincent Bensch
@@ -40,7 +40,7 @@
 ! Real flag: _rknd
 !=======================================================================
 
-&chp_param_nml
+&mbp_param_nml
 ex = 10
 ey = -10
 
