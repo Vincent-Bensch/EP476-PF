@@ -1,0 +1,60 @@
+!=======================================================================
+! File chp_param_nml is the parameter user-defined namelist for the
+! EP476 charged partical solver.
+!
+! Author: Vincent Bensch
+!
+!=======================================================================
+!
+! Variables that can be set by this namlist and their definitions:
+!
+! Externally applied uniform electical field:
+!	ex, ey, ez - Reals, with a default value of 0
+!
+! Externally applied uniform magnetic field:
+!	bx, by, bz - Reals, with a default value of 0
+!
+! Penning-trap parameters:
+!	vtrap(potential) - Real with a default value of 0
+!	rtrap(radius), ztrap(axial length) - Reals with default values of 1
+! 
+! Physical parameters:
+!	npart(actual number of particles) - Int with a default value of 1
+!	t_initial(start time) - Real with a default value of 0
+!	t_final(end time) - Real with a default value of 1
+!
+! Integrator choice:
+!	integrator - character string options=("ADAMS", "BDF", "RK2", "RK4")
+!		default value of "RK4"
+!
+! Number of integration steps:
+!	nstep - Int with a default value of 1
+!
+! Tolerance for Abrams and BDF integrators
+!	tolerance - Real with a default value of 1.e-9
+!
+! Number of plotting steps:
+!	t_plot - Int with a default value of 1
+!
+! Int flag: _iknd
+! Real flag: _rknd
+!=======================================================================
+
+&chp_param_nml
+ex = 10
+ey = -10
+
+bx = 0.01
+by = 0.01
+
+npart = 1
+
+t_initial = 0
+t_final = 0.0001
+
+integrator="ADAMS"
+
+nstep = 1073741824!30
+
+tolerance = 1e-6/
+!Clear EOF

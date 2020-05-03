@@ -1,0 +1,33 @@
+!=======================================================================
+! File chp_part_nml_in is the particle array input namelist for the
+! EP476 charged partical solver.
+!
+! Author: Vincent Bensch
+!
+!=======================================================================
+!
+! Variables that can be set by this namlist and their definitions:
+!
+! Initial partical positions:
+! 	x_init, y_init, z_init - Real arrays with a default value of 0
+!
+! Initial partical velocities:
+! 	vx_init, vy_init, vz_init - Real arrays with a default value of 0
+!
+! Particle atomic compositions:
+!	num_elecs - Int array with a default value of 1
+!	num_prots, num_neuts - Int arrays with a default value of 0
+!=======================================================================
+
+&chp_part_nml
+x_init = 0.00707
+y_init = -0.00707
+
+vx_init = 1000
+vy_init = 1000
+vz_init = 6770
+
+num_elecs = 0
+num_prots = 2
+num_neuts = 2 /
+!Clear EOF

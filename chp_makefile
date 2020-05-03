@@ -1,0 +1,126 @@
+#-----------------------------------------------------------------------
+# This is the makefile for the chp_comp program.  
+# Note that lines such as these that begin with the
+# 'pound' symbol are comment lines.
+#
+# Possible targets for this descriptor file are chp_exec (the
+# default optimized executable), chp_dbg (a debugging version),
+# clean (to remove *.o), and realclean to also remove the executables.
+#
+# Author: Carl Sovinec
+# Modified: Vincent Bensch
+#-----------------------------------------------------------------------
+
+# The following are considered macros.  We'll use them
+# to specify a shell and the compiler and loader programs.
+
+SHELL = /bin/sh
+FCOMP = gfortran
+FLDR = gfortran
+
+# Compiler and loader-option flags are typically listed in
+# separate macros.  The macro with -O3 specifies optimization,
+# while the macro with -g -fbounds-check is used for debugging and
+# runtime checks of array bounds.
+
+FFLAGS = -O3
+# FFLAGS_DBG = -g -fbounds-check -O0 -ffpe-trap=zero -ffpe-trap=invalid
+FFLAGS_DBG = -g -fbounds-check -O0 -ffpe-trap=zero \
+             -ffpe-trap=overflow -ffpe-trap=underflow \
+             -ffpe-trap=denormal
+LDRFLAGS = 
+
+# External library paths and libraries can be listed here.
+
+LIBDIR =  -L/filespace/c/csovinec/lib/odepack
+LIBS =  -lodepack -lblas
+
+#-----------------------------------------------------------------------
+
+# The following macro lists all of the object files that are
+# needed to build the executable.  The "\" signifies
+# that the line is continued.
+
+OBJS = chp_kind_mod.o \
+	   chp_inp_mod.o \
+       chp_data_mod.o \
+	   chp_df_eval.o \
+	   chp_rk_int.o \
+	   chp_main.o
+
+# This is a module-list macro.
+
+MODS = chp_kind_mod.mod \
+	   chp_inp_mod.mod \
+       chp_data_mod.mod
+	   
+
+#-----------------------------------------------------------------------
+
+# The first dependency list is the default, so it should be
+# used for the final executable.  Other dependencies may get
+# invoked in the process of creating the final executable.
+# Note that $(macro) evaluates a macro or an environment variable,
+# and the list of commands or rules follow the dependency.
+
+chp_exec : $(OBJS)
+	@echo "Creating "$@" in directory "$(PWD)"."
+	$(FLDR) -o $@ $(LDRFLAGS) $(OBJS) $(LIBDIR) $(LIBS)
+
+# The following dependency is similar, but it conditionally
+# replaces the value of FFLAGS with FFLAGS_DBG when
+# processing the rules for the target chp_dbg.
+
+chp_dbg : FFLAGS = $(FFLAGS_DBG)
+chp_dbg :  $(OBJS)
+	@echo "Creating "$@" in directory "$(PWD)"."
+	$(FLDR) -o $@ $(LDRFLAGS) $(OBJS) $(LIBDIR) $(LIBS)
+
+#-----------------------------------------------------------------------
+
+# The following is a static pattern rule that provides
+# instructions for creating object files from the fortran
+# source files.  The older suffix rule would have been ".f.o:"
+
+# The symbol at the end is a macro for the current source file.
+
+$(OBJS) : %.o : %.f90
+	$(FCOMP) $(FFLAGS) -c $<
+
+$(MODS) : %.mod : %.f90
+	$(FCOMP) $(FFLAGS) -c $<
+
+# A list of module dependencies ensures that module information
+# specific to a particular source is available.
+
+chp_inp_mod.o: chp_kind_mod.mod
+
+chp_data_mod.o: chp_kind_mod.mod
+chp_data_mod.o: chp_inp_mod.mod
+
+chp_rk_int.o: chp_kind_mod.mod
+
+chp_df_eval.o: chp_kind_mod.mod
+chp_df_eval.o: chp_inp_mod.mod
+chp_df_eval.o: chp_data_mod.mod
+
+chp_main.o: chp_kind_mod.mod
+chp_main.o: chp_inp_mod.mod
+chp_main.o: chp_data_mod.mod
+
+
+#-----------------------------------------------------------------------
+
+# Specifying 'clean' dependencies is also handy.  With no
+# listed dependencies, clean is considered a 'phony' target.
+# The dash in front of a command means to continue even if that
+# command returns a nonzero error code.
+
+clean:
+	-rm *.o *.mod
+	@echo "Cleaned object and mod files from "$(PWD)"."
+
+realclean: clean
+	-rm chp_exec chp_dbg
+	@echo "Cleaned executables from "$(PWD)"."
+
