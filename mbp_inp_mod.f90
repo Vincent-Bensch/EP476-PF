@@ -22,34 +22,23 @@
 
   REAL(rknd) :: grav_accel = 9.80665_rknd
 
-! Data for the fluid in which the pendulum moves. Default values for
-! Dry air at STP (15 deg C and 101.3 kPa).
-
-  REAL(rknd) :: rho_surr = 1.225_rknd   !Density in kg/m^3
-  REAL(rknd) :: mu_surr  = 1.73e-5_rknd !Viscosity in Pa-s
-
 ! The next set defines run-time specification of physical parameters
 ! for a particular computation.
 
-  INTEGER(iknd) :: npart     = i_1 ! # of elements, Initial value: 1
+  INTEGER(iknd) :: nelem     = i_1 ! # of elements, Initial value: 1
   REAL(rknd)    :: t_initial = r_0 ! Initial value: 0
   REAL(rknd)    :: t_final   = r_1 ! Initial value: 1
 
 ! The next set defines initial positions and velocity vectors in
-! Cartesian components.  The integer parameter npart_max is used to
-! declare these initial-value arrays. Arrays
-! that are used to define the type of each particle (number of sub-
-! atomic particles) are also declared.
+! Polar components.  The integer parameter npart_max is used to
+! declare these initial-value arrays. 
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: r
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: m
+
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_init
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_dot_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: vx_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: vy_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: vz_init
-  INTEGER(iknd), DIMENSION(:), ALLOCATABLE :: num_elecs
-  INTEGER(iknd), DIMENSION(:), ALLOCATABLE :: num_prots
-  INTEGER(iknd), DIMENSION(:), ALLOCATABLE :: num_neuts
+
 
 ! The following set of parameters influence the choice and operation
 ! of the numerical method used to solve the ODE system.
@@ -81,20 +70,15 @@
 
   REAL(rknd) :: t_plot=r_1  !  Initial value: 1
 
-
 !Namelist variable assignments
-  
-  NAMELIST / mbp_param_nml / &			!Parameter namelist input 
-      ex, ey, ez, &  					!Electic Field
-      bx, by, bz, & 					!Magnetic Field
-      vtrap, rtrap, ztrap, & 			!Trap parameters 
-	  npart, t_initial, t_final, &		!Physical parameters
-	  integrator, nstep, tolerance, &	!Integrator settings
-	  t_plot							!Plot settings
-	  
-  NAMELIST / mbp_part_nml / &			!Particle namelist input/output
-	  x_init, y_init, z_init, &			!Initial particle positions
-	  vx_init, vy_init, vz_init, &		!Initial particle velocities
-	  num_elecs, num_prots, num_neuts	!Particle composition
+
+  NAMELIST / nlparam / &            !Parameter namelist input 
+    nelem, t_initial, t_final, &    !Physical parameters
+    integrator, nstep, tolerance, & !Integrator settings
+    t_plot                          !Plot settings
+
+  NAMELIST / nlstate / &       !IC namelist input/output
+    r, m, &                    !Physical parameters
+    theta_init, theta_dot_init !Initial positions and velocities
 
   END MODULE mbp_inp_mod
