@@ -1,6 +1,6 @@
 !=======================================================================
-! File mbp_param_nml is the parameter user-defined namelist for the
-! EP476 charged partical solver.
+! File mbp_input.dat is the input state of the pendulum solver
+! for the EP476 final project
 !
 ! Author: Vincent Bensch
 !
@@ -8,18 +8,8 @@
 !
 ! Variables that can be set by this namlist and their definitions:
 !
-! Externally applied uniform electical field:
-!	ex, ey, ez - Reals, with a default value of 0
-!
-! Externally applied uniform magnetic field:
-!	bx, by, bz - Reals, with a default value of 0
-!
-! Penning-trap parameters:
-!	vtrap(potential) - Real with a default value of 0
-!	rtrap(radius), ztrap(axial length) - Reals with default values of 1
-! 
 ! Physical parameters:
-!	npart(actual number of particles) - Int with a default value of 1
+!	elelm(actual number of elements) - Int with a default value of 1
 !	t_initial(start time) - Real with a default value of 0
 !	t_final(end time) - Real with a default value of 1
 !
@@ -35,26 +25,8 @@
 !
 ! Number of plotting steps:
 !	t_plot - Int with a default value of 1
-!
-! Int flag: _iknd
-! Real flag: _rknd
 !=======================================================================
 
 &mbp_param_nml
-ex = 10
-ey = -10
-
-bx = 0.01
-by = 0.01
-
-npart = 1
-
-t_initial = 0
-t_final = 0.0001
-
-integrator="ADAMS"
-
-nstep = 1073741824!30
-
-tolerance = 1e-6/
+nelem = 1 /
 !Clear EOF
