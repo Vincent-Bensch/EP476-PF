@@ -18,36 +18,23 @@
   USE mbp_kind_mod
   IMPLICIT NONE
 
-! The first set defines physical parameters that may be changed to
-! consider a different set of units.  Default values are in MKS units.
+! The physical constant for gratitational acceleration is set to the
+! World Geodetic System 1984 value. It can be changed by namelist input
 
-  REAL(rknd), PARAMETER  :: elem_chrg=1.602176634e-19_rknd
-  REAL(rknd), PARAMETER  :: electron_mass=9.1093837015e-31_rknd
-  REAL(rknd), PARAMETER  :: proton_mass=1.67262192369e-27_rknd
-  REAL(rknd), PARAMETER  :: neutron_mass=1.67492749804e-27_rknd
+  REAL(rknd) :: grav_accel = 9.80665_rknd
 
-! Set the externally applied uniform fields.
+! Data for the fluid in which the pendulum moves. Default values for
+! Dry air at STP (15 deg C and 101.3 kPa).
 
-  REAL(rknd) :: ex=r_0  !  3 components of electric field, Initial value: 0
-  REAL(rknd) :: ey=r_0  !  Initial value: 0
-  REAL(rknd) :: ez=r_0  !  Initial value: 0
-  REAL(rknd) :: bx=r_0  !  3 components of magnetic field, Initial value: 0
-  REAL(rknd) :: by=r_0  !  Initial value: 0
-  REAL(rknd) :: bz=r_0  !  Initial value: 0
-
-! The Penning-trap potential is defined in terms of the applied
-! potential (vtrap), its radius (rtrap), and its axial dimension (ztrap).
-
-  REAL(rknd) :: vtrap=r_0  !  Initial value: 0
-  REAL(rknd) :: rtrap=r_1  !  Initial value: 1
-  REAL(rknd) :: ztrap=r_1  !  Initial value: 1
+  REAL(rknd) :: rho_surr = 1.225_rknd   !Density in kg/m^3
+  REAL(rknd) :: mu_surr  = 1.73e-5_rknd !Viscosity in Pa-s
 
 ! The next set defines run-time specification of physical parameters
 ! for a particular computation.
 
-  INTEGER(iknd) :: npart=i_1    !   # of particles in a computation, Initial value: 1
-  REAL(rknd) :: t_initial=r_0   !  Initial value: 0
-  REAL(rknd) :: t_final=r_1     !  Initial value: 1
+  INTEGER(iknd) :: npart     = i_1 ! # of elements, Initial value: 1
+  REAL(rknd)    :: t_initial = r_0 ! Initial value: 0
+  REAL(rknd)    :: t_final   = r_1 ! Initial value: 1
 
 ! The next set defines initial positions and velocity vectors in
 ! Cartesian components.  The integer parameter npart_max is used to
@@ -55,9 +42,9 @@
 ! that are used to define the type of each particle (number of sub-
 ! atomic particles) are also declared.
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: x_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: y_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: z_init
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: r
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_init
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_dot_init
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: vx_init
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: vy_init
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: vz_init
