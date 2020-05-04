@@ -1,17 +1,16 @@
 !=======================================================================
 ! File mbp_inp_mod.f90 contains all variables that are set by the
 ! user at run-time.  There are scalar variables for physical parameters
-! such as particle masses, and the number of particles to be used in
+! such as pendulum masses, and the number of elements to be used in
 ! a computation.  There are array variables that are used to set the
 ! initial conditions of particle coordinates and velocity vectors
-! for each particle.  There are also parameters that control the
+! for each element.  There are also parameters that control the
 ! numerical integration and specifications for postprocessing.
 !
 ! Default values are provided for each variable.  The main program
 ! will read them from a file through namelist read statements.
 !
-! Author: Carl Sovinec
-! Modified: Vincent Bensch
+! Author: Vincent Bensch
 !=======================================================================
 
   MODULE mbp_inp_mod
