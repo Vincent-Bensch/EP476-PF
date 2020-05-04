@@ -82,18 +82,7 @@
 
   REAL(rknd) :: t_plot=r_1  !  Initial value: 1
 
-! Namelist units
 
-  INTEGER(iknd) :: param_nml=1 !Parameter namelist input 
-  INTEGER(iknd) :: part_nml_in=2 !Particle namelist input 
-  INTEGER(iknd) :: part_nml_out=3 !Particle namelist output 
-  
-! Namelist filenames
-  
-  CHARACTER(32) :: param_nml_file="mbp_param_nml"  		!Parameter namelist input 
-  CHARACTER(32) :: part_nml_file_in="mbp_part_nml_in"  	!Particle namelist input 
-  CHARACTER(32) :: part_nml_file_out="mbp_part_nml_out" !Particle namelist output 
-  
 !Namelist variable assignments
   
   NAMELIST / mbp_param_nml / &			!Parameter namelist input 
