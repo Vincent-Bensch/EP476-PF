@@ -193,14 +193,14 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
   
   PRINT *, repeat(NEW_LINE('A'), 5)
   PRINT *, repeat("=", 79)
-  PRINT *, "|", repeat(" ", 11), &
-    "Welcome to Vincent's charged particle integrator program", &
+  PRINT *, "|", repeat(" ", 10), &
+    "Welcome to Vincent's multi-body pendulum integrator program", &
     repeat(" ", 10), "|"
-  PRINT *, "|", repeat(" ", 23), &
-    "Written for Project 4 of EP-476", &
-    repeat(" ", 23), "|"
+  PRINT *, "|", repeat(" ", 20), &
+    "Written for the Final Project of EP-476", &
+    repeat(" ", 20), "|"
   PRINT *, "|", repeat(" ", 27), &
-    "Last updated 2020-04-10", &
+    "Last updated 2020-05-05", &
     repeat(" ", 27), "|"
   PRINT *, repeat("=", 79), NEW_LINE('A')
   
