@@ -1,5 +1,5 @@
 !=======================================================================
-! File mbp_input.dat is the input state of the pendulum solver
+! File mbp_param.dat is the input state of the pendulum solver
 ! for the EP476 final project
 !
 ! Author: Vincent Bensch
