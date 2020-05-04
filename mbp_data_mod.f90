@@ -51,11 +51,11 @@
   INQUIRE(FILE=part_nml_file_in, EXIST=part_nml_in_exists)
 
   IF (param_nml_exists) THEN
-	OPEN (UNIT=param_nml, FILE= param_nml_file, STATUS= "OLD", FORM= "FORMATTED")
+    OPEN (UNIT=param_nml, FILE= param_nml_file, STATUS= "OLD", FORM= "FORMATTED")
     PRINT *, "Namelist opened: ", param_nml_file
-	READ (UNIT=param_nml, NML= mbp_param_nml)
-	CLOSE (param_nml)
-	PRINT *, "Namelist read into memory: ", param_nml_file, NEW_LINE('A')
+    READ (UNIT=param_nml, NML= mbp_param_nml)
+    CLOSE (param_nml)
+    PRINT *, "Namelist read into memory: ", param_nml_file, NEW_LINE('A')
   ELSE
     PRINT *, "Namelist not found: ", param_nml_file, NEW_LINE('A')
   ENDIF
@@ -105,9 +105,9 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
   IF (part_nml_in_exists) THEN
     OPEN (UNIT=part_nml_in, FILE= part_nml_file_in, STATUS= "OLD", FORM= "FORMATTED")
     PRINT *, "Namelist opened: ", part_nml_file_in
-	READ (UNIT=part_nml_in, NML= mbp_part_nml)
+    READ (UNIT=part_nml_in, NML= mbp_part_nml)
     CLOSE (part_nml_in)
-	PRINT *, "Namelist read into memory: ", part_nml_file_in, NEW_LINE('A')
+    PRINT *, "Namelist read into memory: ", part_nml_file_in, NEW_LINE('A')
   ELSE
     PRINT *, "Namelist not found: ", part_nml_file_in, NEW_LINE('A')
   ENDIF  
@@ -124,24 +124,24 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
                 +neutron_mass*num_neuts(ipart) &
                 +electron_mass*num_elecs(ipart)
     qom(ipart)=pchrg(ipart)/pmass(ipart)
-	
-	ioff = 6 * ipart
-	rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
-	vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
-	tolptr => mbp_ATOL(ioff-5:ioff)    !Tolerance pointer associated with current particle
-	
-	rptr(1) = x_init(ipart) !Position initial conditions
-	rptr(2) = y_init(ipart)
-	rptr(3) = z_init(ipart)
-	
-	vptr(1) = vx_init(ipart) !Velicity initial conditions
-	vptr(2) = vy_init(ipart)
-	vptr(3) = vz_init(ipart)
-	
-	v_part = sqrt(vptr(1) ** 2 + vptr(2) ** 2 + vptr(3) ** 2) !Particle velocity
-	
-	tolptr(1:3) = tolerance * ABS( (v_part * pmass(ipart)) /  (pchrg(ipart) / B_mag) )!Position tolearnce
-	tolptr(4:6) = tolerance * v_part!Velocity tolerance
+
+    ioff = 6 * ipart
+    rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
+    vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
+    tolptr => mbp_ATOL(ioff-5:ioff)    !Tolerance pointer associated with current particle
+
+    rptr(1) = x_init(ipart) !Position initial conditions
+    rptr(2) = y_init(ipart)
+    rptr(3) = z_init(ipart)
+
+    vptr(1) = vx_init(ipart) !Velicity initial conditions
+    vptr(2) = vy_init(ipart)
+    vptr(3) = vz_init(ipart)
+
+    v_part = sqrt(vptr(1) ** 2 + vptr(2) ** 2 + vptr(3) ** 2) !Particle velocity
+
+    tolptr(1:3) = tolerance * ABS( (v_part * pmass(ipart)) /  (pchrg(ipart) / B_mag) )!Position tolearnce
+    tolptr(4:6) = tolerance * v_part!Velocity tolerance
 
   ENDDO
   RETURN
@@ -162,18 +162,18 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
 !-----------------------------------------------------------------------
 
   DO ipart=1,npart
-	
-	ioff = 6 * ipart
-	rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
-	vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
-	
-	x_init(ipart) = rptr(1) !Position initial conditions
-	y_init(ipart) = rptr(2) 
-	z_init(ipart) = rptr(3) 
-	
-	vx_init(ipart) = vptr(1) !Velicity initial conditions
-	vy_init(ipart) = vptr(2)
-	vz_init(ipart) = vptr(3)
+
+    ioff = 6 * ipart
+    rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
+    vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
+
+    x_init(ipart) = rptr(1) !Position initial conditions
+    y_init(ipart) = rptr(2) 
+    z_init(ipart) = rptr(3) 
+
+    vx_init(ipart) = vptr(1) !Velicity initial conditions
+    vy_init(ipart) = vptr(2)
+    vz_init(ipart) = vptr(3)
 
   ENDDO  
   

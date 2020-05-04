@@ -28,28 +28,28 @@
 !-----------------------------------------------------------------------
 ! Index pointers are advanced.
 !-----------------------------------------------------------------------
-	ioff = 6 * ipart
-	rptr => svec(ioff-5:ioff-3) !Position pointer associated with current particle
-	vptr => svec(ioff-2:ioff)   !Velocity pointer associated with current particle
-	drptr => dfvec(ioff-5:ioff-3) !Derivative of position pointer associated with current particle
-	dvptr => dfvec(ioff-2:ioff)  !Derivative of velocity pointer associated with current particle
+    ioff = 6 * ipart
+    rptr => svec(ioff-5:ioff-3) !Position pointer associated with current particle
+    vptr => svec(ioff-2:ioff)   !Velocity pointer associated with current particle
+    drptr => dfvec(ioff-5:ioff-3) !Derivative of position pointer associated with current particle
+    dvptr => dfvec(ioff-2:ioff)  !Derivative of velocity pointer associated with current particle
 
 !-----------------------------------------------------------------------
 ! The derrivative function of position is set the current 'solution' velocity
 !-----------------------------------------------------------------------
 
-	drptr(1) = vptr(1)
-	drptr(2) = vptr(2)
-	drptr(3) = vptr(3)
-	
+    drptr(1) = vptr(1)
+    drptr(2) = vptr(2)
+    drptr(3) = vptr(3)
+
 !-----------------------------------------------------------------------
 ! Evaluate the acceleration at ipart from constant electic and magnetic fields
 !-----------------------------------------------------------------------
 
-	dvptr(1) = qom(ipart) * (ex + vptr(2) * bz - vptr(3) * by)
-	dvptr(2) = qom(ipart) * (ey + vptr(3) * bx - vptr(1) * bz)
-	dvptr(3) = qom(ipart) * (ez + vptr(1) * by - vptr(2) * bx)
-	
+    dvptr(1) = qom(ipart) * (ex + vptr(2) * bz - vptr(3) * by)
+    dvptr(2) = qom(ipart) * (ey + vptr(3) * bx - vptr(1) * bz)
+    dvptr(3) = qom(ipart) * (ez + vptr(1) * by - vptr(2) * bx)
+
   ENDDO
   
   RETURN
