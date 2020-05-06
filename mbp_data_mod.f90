@@ -13,21 +13,26 @@
   USE mbp_kind_mod
   IMPLICIT NONE
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: pchrg  ! charge of each
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: pmass  ! mass of each
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: qom    ! charge to mass ratio
-  
-  REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: sln_vec	!Solution vector
-  
-  REAL(rknd), DIMENSION(:), POINTER :: rptr	!Pointer for position of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: vptr	!Pointer for velocity of current particle
- 
-  REAL(rknd), DIMENSION(:), POINTER :: drptr	!Pointer for position derivative of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: dvptr	!Pointer for velocity derivative of current particle
-  
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_mass         ! mass of element
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_rad          ! radius from previous element
+
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta        ! angle relative to previous element
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta_dot    ! charge to mass ratio
+
+  REAL(rknd), DIMENSION(:), POINTER :: rptr                  ! Pointer for cartesian position of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: vptr                  ! Pointer for cartesian velocity of current particle
+
+  REAL(rknd), DIMENSION(:), POINTER :: drptr                 ! Pointer for cartesian position derivative of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: dvptr                 ! Pointer for cartesian velocity derivative of current particle
+
+  REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: sln_vec   !Solution vector
+
+  REAL(rknd), DIMENSION(2) :: sys_pe !System potential energy (previous, current)
+  REAL(rknd), DIMENSION(2) :: sys_ke !System potential energy (previous, current)
+
   INTEGER(iknd) :: num_eqs !Number of equations in system, and len of sln_vec
   REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: mbp_ATOL !Absolute tolerance vector
-  REAL(rknd) :: B_mag !Total magnetic field magnitude
+
 
   CONTAINS
 
@@ -97,7 +102,7 @@ num_prots=i_0  !  Initial value: 0
 num_neuts=i_0  !  Initial value: 0
 
 B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
-   
+
 !-----------------------------------------------------------------------
 ! Read array namelist (filename specified in mbp_inp_mod)
 !-----------------------------------------------------------------------

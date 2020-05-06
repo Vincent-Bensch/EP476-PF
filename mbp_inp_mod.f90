@@ -33,8 +33,8 @@
 ! Polar components.  The integer parameter npart_max is used to
 ! declare these initial-value arrays. 
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: r
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: m
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: rad
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: mass
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_init
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_dot_init
@@ -78,7 +78,7 @@
     t_plot                          !Plot settings
 
   NAMELIST / nlstate / &       !IC namelist input/output
-    r, m, &                    !Physical parameters
+    rad, mass, &               !Physical parameters
     theta_init, theta_dot_init !Initial positions and velocities
 
   END MODULE mbp_inp_mod
