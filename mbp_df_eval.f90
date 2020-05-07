@@ -15,7 +15,7 @@
 
   INTEGER(iknd), INTENT(IN) :: nsize ! size of the ODE system
   REAL(rknd), INTENT(IN) :: time ! current value of ind. variable
-  REAL(rknd), DIMENSION(nsize), TARGET, INTENT(IN) :: svec ! current ‘solution’ vector
+  REAL(rknd), DIMENSION(nsize), TARGET, INTENT(IN) :: svec_in ! current ‘solution’ vector
   REAL(rknd), DIMENSION(nsize), TARGET, INTENT(OUT) :: dfvec ! will hold the derivative-function vector upon return
 
   REAL(rknd), DIMENSION(nelem + 1, 3) :: t_elem = 0_rknd !Tention in linkage from element n to element n-1 (x_comp, ycomp, mag)
@@ -25,14 +25,18 @@
 
   CALL reset_ptrs
 
-  DO ielem=nelem, 1 !Loop though elements
+  DO ielem = nelem, 1 !Loop though elements
 
 !-----------------------------------------------------------------------
 ! Index pointers are advanced.
 !-----------------------------------------------------------------------
 
-    ioff = 4 * ielem
-    rptr => svec(ioff-3:ioff-2)   !Position pointer associated with current element
+    ioff = 4 * (ielem + 1)
+
+    rptr => svec(ioff-3:ioff-2)       !Position pointer associated with current element
+    nxt_rptr => svec(ioff-7:ioff-6)   !Position pointer associated with next element
+    rel_rptr => nxt_rptr - rptr       !Vector from current to next element
+
     vptr => svec(ioff-1:ioff)     !Velocity pointer associated with current element
 
     drptr => dfvec(ioff-3:ioff-2) !Derivative of position pointer associated with current element
@@ -52,7 +56,7 @@
 ! Compute linkage tention
 !-----------------------------------------------------------------------
 
-    
+    t_elem(ielem, 2) = (rel_rptr(2) / elem_rad(ielem)) * grav_accel
 
 !-----------------------------------------------------------------------
 ! Evaluate the acceleration at ielem from gravitational vector, and linkages

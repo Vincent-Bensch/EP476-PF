@@ -24,6 +24,9 @@
   REAL(rknd), DIMENSION(:), POINTER :: pre_rptr ! Pointer for radius of previous element
   REAL(rknd), DIMENSION(:), POINTER :: pre_vptr ! Pointer for velocity of previous element
 
+  REAL(rknd), DIMENSION(:), POINTER :: nxt_rptr ! Pointer for radius relative to previous element
+  REAL(rknd), DIMENSION(:), POINTER :: nxt_vptr ! Pointer for velocity relative to previous element
+
   REAL(rknd), DIMENSION(:), POINTER :: rel_rptr ! Pointer for radius relative to previous element
   REAL(rknd), DIMENSION(:), POINTER :: rel_vptr ! Pointer for velocity relative to previous element
 
@@ -63,12 +66,12 @@
   ELSE
     PRINT *, "Namelist not found: ", nlparam_file, NEW_LINE('A')
   ENDIF
-  
+
 !-----------------------------------------------------------------------
 ! Allocate the arrays for the number of elements in the pendulum.
 !-----------------------------------------------------------------------
 
-  num_eqs = nelem * 4
+  num_eqs = 4 * (nelem + 1)
 
   ALLOCATE(elem_mass(nelem))
   ALLOCATE(elem_rad(nelem))
@@ -123,7 +126,7 @@
   DO ielem=1,nelem
 
     running_theta = running_theta + elem_theta(ielem)
-    ioff = 4 * ielem
+    ioff = 4 * (ielem + 1)
 
     rptr => sln_vec(ioff-3:ioff-2)  !Position pointer associated with current particle
     vptr => sln_vec(ioff-1:ioff)    !Velocity pointer associated with current particle
@@ -161,7 +164,7 @@
 
   DO ielem=1,nelem
 
-    ioff = 4 * ielem
+    ioff = 4 * (ielem + 1)
 
     rptr => sln_vec(ioff-3:ioff-2)  !Position pointer relative to the previous particle
     vptr => sln_vec(ioff-1:ioff)    !Position pointer relative to the previous particle
