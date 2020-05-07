@@ -25,10 +25,10 @@
   REAL(rknd), DIMENSION(:), POINTER :: omega_in
   REAL(rknd), DIMENSION(:), POINTER :: omega_dot_out
 
-  theta_in => svec(1:4:2)
+  theta_in => svec(1:3:2)
   omega_in => svec(2:4:2)
 
-  theta_dot_out => dfvec(1:4:2)
+  theta_dot_out => dfvec(1:3:2)
   omega_dot_out => dfvec(2:4:2)
 
   theta_dot_out = omega_in

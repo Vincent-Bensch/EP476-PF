@@ -3,7 +3,7 @@
 ! user at run-time.  There are scalar variables for physical parameters
 ! such as pendulum masses, and the number of elements to be used in
 ! a computation.  There are array variables that are used to set the
-! initial conditions of particle coordinates and velocity vectors
+! initial conditions of element coordinates and velocity vectors
 ! for each element.  There are also parameters that control the
 ! numerical integration and specifications for postprocessing.
 !

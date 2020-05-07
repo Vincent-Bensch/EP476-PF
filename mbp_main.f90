@@ -1,6 +1,6 @@
 !=======================================================================
 ! File mbp_main.f90 contains the primary driver for the
-! EP 476 Charged-Particle Simulator (Application 1)
+! EP 476 Final Project
 !
 ! Author: Vincent Bensch
 !========================================================================

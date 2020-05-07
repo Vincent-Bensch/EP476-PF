@@ -30,7 +30,8 @@
 
 &nlparam
 t_initial = 0
-t_final = 10
-nstep = 100000
-integrator = "ADAMS"/
+t_final = 2.00641
+nstep = 10000000
+integrator = "RK4"
+/
 !Clear EOF

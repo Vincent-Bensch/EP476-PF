@@ -1,6 +1,6 @@
 !=======================================================================
 ! File mbp_data_mod.f90 contains module variables that are used to
-! specify the properties of individual particles.
+! specify the properties of individual elements.
 !
 ! The contained subroutine is used to initialize the arrays.
 !
@@ -148,7 +148,7 @@
     "Written for the Final Project of EP-476", &
     repeat(" ", 19), "|"
   PRINT *, "|", repeat(" ", 27), &
-    "Last updated 2020-05-06", &
+    "Last updated 2020-05-07", &
     repeat(" ", 27), "|"
   PRINT *, repeat("=", 79), NEW_LINE('A')
 
@@ -164,7 +164,7 @@
   REAL(rknd) mbp_energy, pot_energy, kin_energy
   REAL(rknd), DIMENSION(2) :: theta, omega
 
-  theta = sln_vec(1:4:2)
+  theta = sln_vec(1:3:2)
   omega = sln_vec(2:4:2)
 
   pot_energy = -(elem_mass(1) + elem_mass(2)) * grav_accel * elem_rad(1) * cos(theta(1)) &
