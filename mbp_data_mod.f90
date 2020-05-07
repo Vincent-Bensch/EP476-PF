@@ -13,13 +13,17 @@
   USE mbp_kind_mod
   IMPLICIT NONE
 
-  REAL(rknd), DIMENSION(:), POINTER :: rptr                  ! Pointer for cartesian position of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: vptr                  ! Pointer for cartesian velocity of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: rptr     ! Pointer for cartesian position of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: vptr     ! Pointer for cartesian velocity of current particle
 
-  REAL(rknd), DIMENSION(:), POINTER :: drptr                 ! Pointer for cartesian position derivative of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: dvptr                 ! Pointer for cartesian velocity derivative of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: drptr    ! Pointer for cartesian position derivative of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: dvptr    ! Pointer for cartesian velocity derivative of current particle
 
-  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
+  REAL(rknd), DIMENSION(:), POINTER :: pre_rptr ! Pointer for radius of previous element
+  REAL(rknd), DIMENSION(:), POINTER :: pre_vptr ! Pointer for velocity of previous element
+
+  REAL(rknd), DIMENSION(:), POINTER :: rel_rptr ! Pointer for radius relative to previous element
+  REAL(rknd), DIMENSION(:), POINTER :: rel_vptr ! Pointer for velocity relative to previous element
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: sln_vec   !Solution vector
 
@@ -103,8 +107,7 @@
   REAL(rknd) :: running_theta     = 0_rknd
   REAL(rknd) :: running_theta_dot = 0_rknd
 
-  p_rptr = 0_rknd
-  p_vptr = 0_rknd
+  CALL reset_ptrs
 
 !-----------------------------------------------------------------------
 ! Loop over the elements and use the input specifications or default
@@ -129,8 +132,7 @@
     tolptr(1:2) = pos_tolerance !Position tolearnce
     tolptr(3:4) = vel_tolerance !Velocity tolerance
 
-    p_rptr => rptr
-    p_vptr => vptr
+    CALL update_pre_ptr
 
   ENDDO
 
@@ -145,8 +147,7 @@
 
   INTEGER(iknd) :: ielem, ioff
 
-  p_rptr = 0_rknd
-  p_vptr = 0_rknd
+  CALL reset_ptrs
 
 !-----------------------------------------------------------------------
 ! Loop over the particles and reset IC variable from solution vector
@@ -157,15 +158,16 @@
     running_theta = runnng_theta + elem_theta(ielem)
     ioff = 4 * ielem
 
-    rptr => sln_vec(ioff-3:ioff-2) - p_rptr  !Position pointer relative to the previous particle
-    vptr => sln_vec(ioff-1:ioff) - p_vptr    !Position pointer relative to the previous particle
+    rptr => sln_vec(ioff-3:ioff-2)  !Position pointer relative to the previous particle
+    vptr => sln_vec(ioff-1:ioff)    !Position pointer relative to the previous particle
+
+    CALL update_rel_ptr
 
     elem_theta = atan2(rptr(2), rptr(1))
     elem_theta_dot = (rptr(1) * vptr(2) - vptr(1) * rptr(2)) /&
                    & (rptr(1) ** 2 + rptr(2) ** 2)
 
-    p_rptr => sln_vec(ioff-3:ioff-2)
-    p_vptr => sln_vec(ioff-1:ioff)
+    CALL update_pre_ptr
 
   ENDDO
 
@@ -180,9 +182,9 @@
 !=======================================================================
 ! The module subroutine mbp_welcome prints a welcome message to screen
 !=======================================================================
- 
+
   SUBROUTINE mbp_welcome
-  
+
   PRINT *, repeat(NEW_LINE('A'), 5)
   PRINT *, repeat("=", 79)
   PRINT *, "|", repeat(" ", 10), &
@@ -198,5 +200,44 @@
 
   RETURN
   END SUBROUTINE mbp_welcome
+
+!=======================================================================
+! The module subroutine reset_ptrs resets the solution vector pointers to 0
+!=======================================================================
+
+  SUBROUTINE reset_ptrs
+
+  rptr = 0_rknd
+  vptr = 0_rknd
+
+  pre_rptr = 0_rknd
+  pre_vptr = 0_rknd
+
+  rel_rptr = 0_rknd
+  rel_vptr = 0_rknd
+
+  END SUBROUTINE reset_ptrs
+
+!=======================================================================
+! The module subroutine update_pre_ptr updates the relative solution vector pointers
+!=======================================================================
+
+  SUBROUTINE update_pre_ptr
+
+  pre_rptr = rptr
+  pre_vptr = vptr
+
+  END SUBROUTINE update_pre_ptr
+
+!=======================================================================
+! The module subroutine update_rel_ptr updates the relative solution vector pointers
+!=======================================================================
+
+  SUBROUTINE update_rel_ptr
+
+  rel_rptr = rptr - pre_rptr
+  rel_vptr = vptr - pre_rptr
+
+  END SUBROUTINE update_rel_ptr
 
   END MODULE mbp_data_mod
