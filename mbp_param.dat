@@ -9,7 +9,7 @@
 ! Variables that can be set by this namlist and their definitions:
 !
 ! Physical parameters:
-!   elelm(actual number of elements) - Int with a default value of 1
+!   nelelm(actual number of elements) - Int with a default value of 1
 !   t_initial(start time) - Real with a default value of 0
 !   t_final(end time) - Real with a default value of 1
 !
@@ -29,6 +29,9 @@
 !   t_plot - Int with a default value of 1
 !=======================================================================
 
-&mbp_param_nml
-nelem = 1 /
+&nlparam
+nelem = 1 
+t_initial = 0
+t_final = 10
+nstep = 1000/
 !Clear EOF

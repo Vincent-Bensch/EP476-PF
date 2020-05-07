@@ -11,6 +11,8 @@
   MODULE mbp_data_mod
   USE mbp_inp_mod
   USE mbp_kind_mod
+  USE mbp_io_mod
+
   IMPLICIT NONE
 
   REAL(rknd), DIMENSION(:), POINTER :: rptr     ! Pointer for cartesian position of current particle
@@ -75,8 +77,12 @@
 
   ALLOCATE(sln_vec(1:num_eqs))
   ALLOCATE(mbp_ATOL(num_eqs))
-  allocate(p_rptr(2))
-  allocate(p_vptr(2))
+
+  allocate(pre_rptr(2))
+  allocate(pre_vptr(2))
+
+  allocate(rel_rptr(2))
+  allocate(rel_vptr(2))
 
 !-----------------------------------------------------------------------
 ! Read array namelist (filename specified in mbp_inp_mod)
@@ -116,18 +122,18 @@
 
   DO ielem=1,nelem
 
-    running_theta = runnng_theta + elem_theta(ielem)
+    running_theta = running_theta + elem_theta(ielem)
     ioff = 4 * ielem
 
     rptr => sln_vec(ioff-3:ioff-2)  !Position pointer associated with current particle
     vptr => sln_vec(ioff-1:ioff)    !Velocity pointer associated with current particle
     tolptr => mbp_ATOL(ioff-3:ioff) !Tolerance pointer associated with current particle
 
-    rptr(1) = cos(running_theta) * elem_rad + p_rprt(1)!X
-    rptr(2) = sin(running_theta) * elem_rad + p_rprt(2)!Y
+    rptr(1) = cos(running_theta) * elem_rad(ielem) + pre_rptr(1)!X
+    rptr(2) = sin(running_theta) * elem_rad(ielem) + pre_rptr(2)!Y
 
-    vptr(1) = (-1_rknd) * elem_theta_dot(ielem) * elem_rad * sin(runing_theta) + p_vprt(1)!X
-    vptr(2) = elem_theta_dot(ielem) * elem_rad * cos(runing_theta) + p_vprt(1)!Y
+    vptr(1) = (-1_rknd) * elem_theta_dot(ielem) * elem_rad(ielem) * sin(running_theta) + pre_vptr(1)!X
+    vptr(2) = elem_theta_dot(ielem) * elem_rad(ielem) * cos(running_theta) + pre_vptr(1)!Y
 
     tolptr(1:2) = pos_tolerance !Position tolearnce
     tolptr(3:4) = vel_tolerance !Velocity tolerance
@@ -155,7 +161,6 @@
 
   DO ielem=1,nelem
 
-    running_theta = runnng_theta + elem_theta(ielem)
     ioff = 4 * ielem
 
     rptr => sln_vec(ioff-3:ioff-2)  !Position pointer relative to the previous particle
@@ -187,12 +192,12 @@
 
   PRINT *, repeat(NEW_LINE('A'), 5)
   PRINT *, repeat("=", 79)
-  PRINT *, "|", repeat(" ", 10), &
+  PRINT *, "|", repeat(" ", 9), &
     "Welcome to Vincent's multi-body pendulum integrator program", &
-    repeat(" ", 10), "|"
-  PRINT *, "|", repeat(" ", 20), &
+    repeat(" ", 9), "|"
+  PRINT *, "|", repeat(" ", 19), &
     "Written for the Final Project of EP-476", &
-    repeat(" ", 20), "|"
+    repeat(" ", 19), "|"
   PRINT *, "|", repeat(" ", 27), &
     "Last updated 2020-05-06", &
     repeat(" ", 27), "|"
@@ -206,9 +211,6 @@
 !=======================================================================
 
   SUBROUTINE reset_ptrs
-
-  rptr = 0_rknd
-  vptr = 0_rknd
 
   pre_rptr = 0_rknd
   pre_vptr = 0_rknd

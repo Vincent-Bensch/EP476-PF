@@ -23,6 +23,10 @@ INTEGER(iknd) :: mbp_LRW, mbp_LIW, mbp_MF, mbp_JAC !length of rwork and iwork
 
 CALL mbp_welcome
 
+PRINT *, "Starting data loading", NEW_LINE('A')
+
+CALL mbp_data_load
+
 PRINT *, "Starting data initialization", NEW_LINE('A')
 
 CALL mbp_data_init
@@ -139,7 +143,7 @@ SUBROUTINE DLSODE_caller
     t_initial,&				!T = time at computation start
     t_final,&				!TOUT = time at computation end
     2_iknd,&				!ITOL = tol setting per problem statement
-    tolerance,&				!RTOL = user specified relative tolerance
+    rel_tolerance,&			!RTOL = user specified relative tolerance
     mbp_ATOL,&				!ATOL = absolute tolerance vector specified in data_mod
     i_1,&					!ITASK = 1 - normal computation
     mbp_istate,&			!ISTATE = 1 - first call

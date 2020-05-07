@@ -42,18 +42,20 @@ LIBS =  -lodepack -lblas
 # that the line is continued.
 
 OBJS = mbp_kind_mod.o \
-	   mbp_inp_mod.o \
+       mbp_inp_mod.o \
+       mbp_io_mod.o \
        mbp_data_mod.o \
-	   mbp_df_eval.o \
-	   mbp_rk_int.o \
-	   mbp_main.o
+       mbp_df_eval.o \
+       mbp_rk_int.o \
+       mbp_main.o
 
 # This is a module-list macro.
 
 MODS = mbp_kind_mod.mod \
-	   mbp_inp_mod.mod \
+       mbp_inp_mod.mod \
+       mbp_io_mod.mod \
        mbp_data_mod.mod
-	   
+
 
 #-----------------------------------------------------------------------
 
@@ -97,6 +99,7 @@ mbp_inp_mod.o: mbp_kind_mod.mod
 
 mbp_data_mod.o: mbp_kind_mod.mod
 mbp_data_mod.o: mbp_inp_mod.mod
+mbp_data_mod.o: mbp_io_mod.mod
 
 mbp_rk_int.o: mbp_kind_mod.mod
 

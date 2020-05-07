@@ -74,14 +74,14 @@
 
 !Namelist variable assignments
 
-  NAMELIST / nlparam / &              !Parameter namelist input 
-    nelem, t_initial, t_final, &      !Physical parameters
-    integrator, nstep, rel_tolerance& !Integrator Settings
-    pos_tolerance, vel_tolerance &    !Bonus integrator settings
-    t_plot                            !Plot settings
+  NAMELIST / nlparam / &                !Parameter namelist input 
+    nelem, t_initial, t_final, &        !Physical parameters
+    integrator, nstep, rel_tolerance, & !Integrator Settings
+    pos_tolerance, vel_tolerance, &     !Bonus integrator settings
+    t_plot                              !Plot settings
 
   NAMELIST / nlstate / &       !IC namelist input/output
-    rad, mass, &               !Physical parameters
-    theta_init, theta_dot_init !Initial positions and velocities
+    elem_rad, elem_mass, &     !Physical parameters
+    elem_theta, elem_theta_dot !Initial positions and velocities
 
   END MODULE mbp_inp_mod
