@@ -161,28 +161,21 @@
 
   FUNCTION mbp_energy()
 
-  REAL(rknd) mbp_energy
-  REAL(rknd), DIMENSION(2) :: theta, omega, x_vel, y_vel, x_pos, y_pos
+  REAL(rknd) mbp_energy, pot_energy, kin_energy
+  REAL(rknd), DIMENSION(2) :: theta, omega
 
   theta = sln_vec(1:4:2)
   omega = sln_vec(2:4:2)
 
-  x_pos(1) = sin(theta(1)) * elem_rad(1)
-  y_pos(1) = -cos(theta(1)) * elem_rad(1)
+  pot_energy = -(elem_mass(1) + elem_mass(2)) * grav_accel * elem_rad(1) * cos(theta(1)) &
+             - elem_mass(2) * grav_accel * elem_rad(2) * cos(theta(2)) ! Potential energy
 
-  x_pos(2) = sin(theta(2)) * elem_rad(2) + x_pos(1)
-  y_pos(2) = -cos(theta(2)) * elem_rad(2) + y_pos(1)
+  kin_energy = 1/2 * elem_mass(1) * elem_rad(1) ** 2 * omega(1) ** 2 &
+             + 1/2 * elem_mass(2) * ( elem_rad(1) ** 2 * omega(1) ** 2 &
+             + elem_rad(2) ** 2 * omega(2) ** 2 &
+             + 2 * elem_rad(1) * elem_rad(2) * omega(1) * omega(2) * cos(theta(1) - theta(2) ))
 
-  x_vel(1) = omega(1) * cos(theta(1)) * elem_rad(1)
-  y_vel(1) = omega(1) * sin(theta(1)) * elem_rad(1)
-
-  x_vel(2) = omega(2) * cos(theta(2)) * elem_rad(2) + x_vel(1)
-  y_vel(2) = omega(2) * sin(theta(2)) * elem_rad(2) + y_vel(1)
-
-  mbp_energy = y_pos(1) * elem_mass(1) * grav_accel &!Contribution from height of element 1
-             + y_pos(2) * elem_mass(2) * grav_accel &!Contribution from height of element 2
-             + elem_mass(1) * (x_vel(1) ** 2 + y_vel(1) ** 2) / 2 &!Contribution from velocity of element 1
-             + elem_mass(2) * (x_vel(2) ** 2 + y_vel(2) ** 2) / 2  !Contribution from velocity of element 2
+  mbp_energy = pot_energy + kin_energy
 
   END FUNCTION mbp_energy
 
