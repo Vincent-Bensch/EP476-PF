@@ -14,8 +14,7 @@
     CHARACTER(32), PARAMETER :: nlin_file     = "mbp_input.dat"  !IC input
     CHARACTER(32), PARAMETER :: nlout_file    = "mbp_output.dat" !FC output
     CHARACTER(32), PARAMETER :: time_file     = "mbp_time.dat"   !Time mesh for plot
-    CHARACTER(32), PARAMETER :: xplt_file     = "mbp_xcoord.dat" !x coord mesh for plot
-    CHARACTER(32), PARAMETER :: yplt_file     = "mbp_ycoord.dat" !y coord mesh for plot
+    CHARACTER(32), PARAMETER :: angle_file    = "mbp_anlge.dat"  !Angle mesh for plot
   
 !  Unit numbers
 
@@ -23,7 +22,6 @@
     INTEGER(iknd), PARAMETER :: nlin_unit     = 11 !IC input
     INTEGER(iknd), PARAMETER :: nlout_unit    = 12 !FC output
     INTEGER(iknd), PARAMETER :: time_unit     = 13 !Time mesh for plot
-    INTEGER(iknd), PARAMETER :: xplt_unit     = 14 !x coord mesh for plot
-    INTEGER(iknd), PARAMETER :: yplt_unit     = 15 !y coord mesh for plot
+    INTEGER(iknd), PARAMETER :: angle_unit    = 14 !x coord mesh for plot
 
   END MODULE mbp_io_mod

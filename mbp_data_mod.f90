@@ -100,6 +100,9 @@
   mbp_ATOL(2) = omega_tolerance !Velocity tolerance
   mbp_ATOL(4) = omega_tolerance !Velocity tolerance
 
+!Print energy
+  PRINT *, "Total system energy: ", mpb_energy()
+
   END SUBROUTINE mbp_data_init
 
 !=======================================================================
@@ -108,6 +111,9 @@
 !=======================================================================
 
   SUBROUTINE mbp_data_term
+
+!Print energy
+  PRINT *, "Total system energy: ", mpb_energy()
 
 !-----------------------------------------------------------------------
 ! Create fcs from solution vector
@@ -148,5 +154,37 @@
 
   RETURN
   END SUBROUTINE mbp_welcome
+
+!=======================================================================
+! The module function mbp_energy returns system energy
+!=======================================================================
+
+  FUNCTION mpb_energy
+
+  REAL(rknd) mbp_energy
+  REAL(rknd), DIMENSION(2) :: theta, omega, x_vel, y_vel, x_pos, y_pos
+
+  theta = svec(1:4:2)
+  omega = svec(2:4:2)
+
+  x_pos(1) = sin(theta) * elem_rad(1)
+  y_pos(1) = -cos(theta) * elem_rad(1)
+
+  x_pos(2) = sin(theta) * elem_rad(2) + x_pos(1)
+  y_pos(2) = -cos(theta) * elem_rad(2) + y_pos(1)
+
+  x_vel(1) = omega(1) * cos(theta) * elem_rad(1)
+  y_vel(1) = omega(1) * sin(theta) * elem_rad(1)
+
+  x_vel(2) = omega(2) * cos(theta(2)) * elem_rad(2) + x_vel(1)
+  y_vel(2) = omega(2) * sin(theta(2)) * elem_rad(2) + y_vel(1)
+
+  mbp_energy = ypos(1) * elem_mass(1) * grav_accel &!Contribution from height of element 1
+             + ypos(2) * elem_mass(2) * grav_accel &!Contribution from height of element 2
+             + (x_vel(1) ** 2 + y_vel(1) ** 2) / 2 &!Contribution from velocity of element 1
+             + (x_vel(2) ** 2 + y_vel(2) ** 2) / 2  !Contribution from velocity of element 2
+
+  RETURN
+  END FUNCTION mbp_energy
 
   END MODULE mbp_data_mod
