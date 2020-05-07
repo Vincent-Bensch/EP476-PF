@@ -30,7 +30,7 @@
   REAL(rknd)    :: t_final   = r_1 ! Initial value: 1
 
 ! The next set defines initial positions and velocity vectors in
-! Polar components.  The integer parameter npart_max is used to
+! Polar components.  The integer parameter nelem_max is used to
 ! declare these initial-value arrays. 
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_mass         ! mass of element
