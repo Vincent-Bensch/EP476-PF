@@ -19,6 +19,8 @@
   REAL(rknd), DIMENSION(:), POINTER :: drptr                 ! Pointer for cartesian position derivative of current particle
   REAL(rknd), DIMENSION(:), POINTER :: dvptr                 ! Pointer for cartesian velocity derivative of current particle
 
+  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
+
   REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: sln_vec   !Solution vector
 
   REAL(rknd), DIMENSION(2) :: sys_pe !System potential energy (previous, current)
@@ -69,6 +71,8 @@
 
   ALLOCATE(sln_vec(1:num_eqs))
   ALLOCATE(mbp_ATOL(num_eqs))
+  allocate(p_rptr(2))
+  allocate(p_vptr(2))
 
 !-----------------------------------------------------------------------
 ! Read array namelist (filename specified in mbp_inp_mod)
@@ -96,12 +100,9 @@
   
   INTEGER(iknd) :: ielem, ioff
   REAL(rknd), DIMENSION(:), POINTER :: tolptr !Pointer for tolerance of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
   REAL(rknd) :: running_theta     = 0_rknd
   REAL(rknd) :: running_theta_dot = 0_rknd
 
-  allocate(p_rptr(2))
-  allocate(p_vptr(2))
   p_rptr = 0_rknd
   p_vptr = 0_rknd
 
@@ -143,10 +144,7 @@
   SUBROUTINE mbp_data_term
 
   INTEGER(iknd) :: ielem, ioff
-  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
 
-  allocate(p_rptr(2))
-  allocate(p_vptr(2))
   p_rptr = 0_rknd
   p_vptr = 0_rknd
 
