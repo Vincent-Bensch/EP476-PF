@@ -16,8 +16,8 @@
 !=======================================================================
 
 &nlstate
-elem_rad = 1
-elem_mass = 1
-elem_theta = 3
-elem_omega = 0/
+elem_rad = 1, 2
+elem_mass = 10, 20
+elem_theta = 0, 0
+elem_omega = 2, 0/
 !Clear EOF

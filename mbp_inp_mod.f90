@@ -37,7 +37,7 @@
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_rad          ! radius from previous element
 
   REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta        ! angle relative to previous element
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta_dot    ! charge to mass ratio
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_omega    ! charge to mass ratio
 
 ! The following set of parameters influence the choice and operation
 ! of the numerical method used to solve the ODE system.

@@ -52,7 +52,7 @@
 ! Allocate the arrays for the number of elements in the pendulum.
 !-----------------------------------------------------------------------
 
-  num_eqs = 4_iknd
+  num_eqs = 2 * nelem
 
   ALLOCATE(elem_mass(nelem))
   ALLOCATE(elem_rad(nelem))
@@ -90,17 +90,15 @@
 ! Setup solution vector from ICs
 !-----------------------------------------------------------------------
 
-  svec(1) = elem_theta(1)
-  svec(2) = elem_omega(1)
-  svec(3) = elem_theta(2)
-  svec(4) = elem_omega(2)
+  sln_vec(1) = elem_theta(1)
+  sln_vec(2) = elem_omega(1)
+  sln_vec(3) = elem_theta(2)
+  sln_vec(4) = elem_omega(2)
 
-  tolptr(1) = theta_tolerance !Position tolearnce
-  tolptr(3) = theta_tolerance !Position tolearnce
-  tolptr(2) = omega_tolerance !Velocity tolerance
-  tolptr(4) = omega_tolerance !Velocity tolerance
-
-  ENDDO
+  mbp_ATOL(1) = theta_tolerance !Position tolearnce
+  mbp_ATOL(3) = theta_tolerance !Position tolearnce
+  mbp_ATOL(2) = omega_tolerance !Velocity tolerance
+  mbp_ATOL(4) = omega_tolerance !Velocity tolerance
 
   END SUBROUTINE mbp_data_init
 

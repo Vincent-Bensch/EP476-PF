@@ -25,15 +25,11 @@
   REAL(rknd), DIMENSION(:), POINTER :: omega_in
   REAL(rknd), DIMENSION(:), POINTER :: omega_dot_out
 
-  theta_in(1) => svec(1)
-  omega_in(1) => svec(2)
-  theta_in(2) => svec(3)
-  omega_in(2) => svec(4)
+  theta_in => svec(1:4:2)
+  omega_in => svec(2:4:2)
 
-  theta_dot_out(1) => dfvec(1)
-  omega_dot_out(1) => dfvec(2)
-  theta_dot_out(2) => dfvec(3)
-  omega_dot_out(2) => dfvec(4)
+  theta_dot_out => dfvec(1:4:2)
+  omega_dot_out => dfvec(2:4:2)
 
   theta_dot_out = omega_in
 
@@ -49,8 +45,8 @@
        + omega_in(1) ** 2 * elem_rad(1) * CTD)
 
   N2 = 2 * STD * (omega_in(1) ** 2 * elem_rad(1) * (elem_mass(1) + elem_mass(2)) &
-       + grav_accel * (elem_mass(1) + elem_mass(2)) * cos(theta_in(1) &
-       + omega_in(2) ** 2 * elem_rad(2) * elem_mass(2) * CTD
+       + grav_accel * (elem_mass(1) + elem_mass(2)) * cos(theta_in(1)) &
+       + omega_in(2) ** 2 * elem_rad(2) * elem_mass(2) * CTD)
 
   omega_dot_out(1) = N1 / (elem_rad(1) * C1)
   omega_dot_out(2) = N2 / (elem_rad(2) * C1)
