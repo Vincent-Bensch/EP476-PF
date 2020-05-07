@@ -110,7 +110,7 @@
 ! values to assign the data arrays.
 !-----------------------------------------------------------------------
 
-  DO ielem=1,npart
+  DO ielem=1,nelem
 
     running_theta = runnng_theta + elem_theta(ielem)
     ioff = 4 * ielem
@@ -122,8 +122,8 @@
     rptr(1) = cos(running_theta) * elem_rad + p_rprt(1)!X
     rptr(2) = sin(running_theta) * elem_rad + p_rprt(2)!Y
 
-    vptr(1) = sin(theta_dot(ielem)) * elem_rad + p_vprt(1)!X
-    vptr(2) = cos(theta_dot(ielem)) * elem_rad + p_vprt(2)!Y
+    vptr(1) = (-1_rknd) * elem_theta_dot(ielem) * elem_rad * sin(runing_theta) + p_vprt(1)!X
+    vptr(2) = elem_theta_dot(ielem) * elem_rad * cos(runing_theta) + p_vprt(1)!Y
 
     tolptr(1:2) = pos_tolerance !Position tolearnce
     tolptr(3:4) = vel_tolerance !Velocity tolerance
@@ -141,37 +141,44 @@
 !=======================================================================
 
   SUBROUTINE mbp_data_term
-  
+
   INTEGER(iknd) :: ielem, ioff
+  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
+
+  allocate(p_rptr(2))
+  allocate(p_vptr(2))
+  p_rptr = 0_rknd
+  p_vptr = 0_rknd
 
 !-----------------------------------------------------------------------
 ! Loop over the particles and reset IC variable from solution vector
 !-----------------------------------------------------------------------
 
-  DO ielem=1,npart
+  DO ielem=1,nelem
 
-    ioff = 6 * ielem
-    rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
-    vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
+    running_theta = runnng_theta + elem_theta(ielem)
+    ioff = 4 * ielem
 
-    x_init(ielem) = rptr(1) !Position initial conditions
-    y_init(ielem) = rptr(2) 
-    z_init(ielem) = rptr(3) 
+    rptr => sln_vec(ioff-3:ioff-2) - p_rptr  !Position pointer relative to the previous particle
+    vptr => sln_vec(ioff-1:ioff) - p_vptr    !Position pointer relative to the previous particle
 
-    vx_init(ielem) = vptr(1) !Velicity initial conditions
-    vy_init(ielem) = vptr(2)
-    vz_init(ielem) = vptr(3)
+    elem_theta = atan2(rptr(2), rptr(1))
+    elem_theta_dot = (rptr(1) * vptr(2) - vptr(1) * rptr(2)) /&
+                   & (rptr(1) ** 2 + rptr(2) ** 2)
 
-  ENDDO  
-  
-  OPEN (UNIT=part_nml_out, FILE= part_nml_file_out, STATUS= "REPLACE", FORM= "FORMATTED")
-  WRITE (UNIT=part_nml_out, NML= mbp_part_nml)
-  PRINT *, "Namelist written from memory: ", part_nml_file_out
-  CLOSE (part_nml_out)
+    p_rptr => sln_vec(ioff-3:ioff-2)
+    p_vptr => sln_vec(ioff-1:ioff)
+
+  ENDDO
+
+  OPEN (UNIT=nlout_unit, FILE= nlout_file, STATUS= "REPLACE", FORM= "FORMATTED")
+  WRITE (UNIT=nlout_unit, NML= nlstate)
+  PRINT *, "Namelist written from memory: ", nlout_file
+  CLOSE (nlout_unit)
   RETURN
-  
+
   END SUBROUTINE mbp_data_term
- 
+
 !=======================================================================
 ! The module subroutine mbp_welcome prints a welcome message to screen
 !=======================================================================
@@ -190,8 +197,8 @@
     "Last updated 2020-05-06", &
     repeat(" ", 27), "|"
   PRINT *, repeat("=", 79), NEW_LINE('A')
-  
+
   RETURN
   END SUBROUTINE mbp_welcome
-  
+
   END MODULE mbp_data_mod

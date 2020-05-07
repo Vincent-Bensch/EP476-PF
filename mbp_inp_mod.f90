@@ -74,10 +74,11 @@
 
 !Namelist variable assignments
 
-  NAMELIST / nlparam / &            !Parameter namelist input 
-    nelem, t_initial, t_final, &    !Physical parameters
-    integrator, nstep, tolerance, & !Integrator settings
-    t_plot                          !Plot settings
+  NAMELIST / nlparam / &              !Parameter namelist input 
+    nelem, t_initial, t_final, &      !Physical parameters
+    integrator, nstep, rel_tolerance& !Integrator Settings
+    pos_tolerance, vel_tolerance &    !Bonus integrator settings
+    t_plot                            !Plot settings
 
   NAMELIST / nlstate / &       !IC namelist input/output
     rad, mass, &               !Physical parameters
