@@ -18,9 +18,9 @@
   IMPLICIT NONE
 
 ! The physical constant for gratitational acceleration is set to the
-! World Geodetic System 1984 value. It can be changed by namelist input
+! World Geodetic System 1984 value. It can be changed by recompiling
 
-  REAL(rknd) :: grav_accel = 9.80665_rknd
+  REAL(rknd), PARAMETER :: grav_accel = 9.80665_rknd
 
 ! The next set defines run-time specification of physical parameters
 ! for a particular computation.
