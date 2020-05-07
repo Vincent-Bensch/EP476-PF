@@ -13,12 +13,6 @@
   USE mbp_kind_mod
   IMPLICIT NONE
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_mass         ! mass of element
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_rad          ! radius from previous element
-
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta        ! angle relative to previous element
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta_dot    ! charge to mass ratio
-
   REAL(rknd), DIMENSION(:), POINTER :: rptr                  ! Pointer for cartesian position of current particle
   REAL(rknd), DIMENSION(:), POINTER :: vptr                  ! Pointer for cartesian velocity of current particle
 
@@ -37,122 +31,110 @@
   CONTAINS
 
 !=======================================================================
-! The module subroutine mbp_data_init initializes the data arrays for
-! the collection of particles.
+! The module subroutine mbp_data_load loads namelist data, and allocates
+! arrays
 !=======================================================================
 
-  SUBROUTINE mbp_data_init
+  SUBROUTINE mbp_data_load
 
-  INTEGER(iknd) :: ipart, ioff
-  LOGICAL  :: param_nml_exists, part_nml_in_exists !Bools to check exsistance of namelists
-  REAL(rknd), DIMENSION(:), POINTER :: tolptr	!Pointer for tolerance of current particle
-  REAL(rknd) :: v_part !Velocity of current particle
-  
+  LOGICAL  :: nlparam_exsists, nlstate_in_exsists !Bools to check exsistance of namelists
+
 !-----------------------------------------------------------------------
 ! Read parateter namelist (filename specified in mbp_inp_mod)
 !-----------------------------------------------------------------------
   
-  INQUIRE(FILE=param_nml_file, EXIST=param_nml_exists)
-  INQUIRE(FILE=part_nml_file_in, EXIST=part_nml_in_exists)
+  INQUIRE(FILE = nlparam_file, EXIST = nlparam_exsists)
+  INQUIRE(FILE = nlin_file,    EXIST = nlstate_in_exsists)
 
-  IF (param_nml_exists) THEN
-    OPEN (UNIT=param_nml, FILE= param_nml_file, STATUS= "OLD", FORM= "FORMATTED")
-    PRINT *, "Namelist opened: ", param_nml_file
-    READ (UNIT=param_nml, NML= mbp_param_nml)
-    CLOSE (param_nml)
-    PRINT *, "Namelist read into memory: ", param_nml_file, NEW_LINE('A')
+  IF (nlparam_exsists) THEN
+    OPEN (UNIT=nlparam_unit, FILE= nlparam_file, STATUS= "OLD", FORM= "FORMATTED")
+    PRINT *, "Namelist opened: ", nlparam_file
+    READ (UNIT=nlparam_unit, NML= nlparam)
+    CLOSE (nlparam_unit)
+    PRINT *, "Namelist read into memory: ", nlparam_file, NEW_LINE('A')
   ELSE
-    PRINT *, "Namelist not found: ", param_nml_file, NEW_LINE('A')
+    PRINT *, "Namelist not found: ", nlparam_file, NEW_LINE('A')
   ENDIF
   
 !-----------------------------------------------------------------------
-! Allocate the arrays for the number of particles in the computation.
+! Allocate the arrays for the number of elements in the pendulum.
 !-----------------------------------------------------------------------
 
-  num_eqs = npart * 6
+  num_eqs = nelem * 4
 
-  ALLOCATE(pchrg(npart))
-  ALLOCATE(pmass(npart))
-  ALLOCATE(qom(npart))
+  ALLOCATE(elem_mass(nelem))
+  ALLOCATE(elem_rad(nelem))
+  ALLOCATE(elem_theta(nelem))
+  ALLOCATE(elem_theta_dot(nelem))
+
   ALLOCATE(sln_vec(1:num_eqs))
-  
-  ALLOCATE(x_init(npart))
-  ALLOCATE(y_init(npart))
-  ALLOCATE(z_init(npart))
-  ALLOCATE(vx_init(npart))
-  ALLOCATE(vy_init(npart))
-  ALLOCATE(vz_init(npart))
-  ALLOCATE(num_elecs(npart))
-  ALLOCATE(num_prots(npart))
-  ALLOCATE(num_neuts(npart))
-
   ALLOCATE(mbp_ATOL(num_eqs))
-!-----------------------------------------------------------------------
-! Set ICs for allocatable arrays
-!-----------------------------------------------------------------------
-
-x_init=r_0  !  Initial value: 0
-y_init=r_0  !  Initial value: 0
-z_init=r_0  !  Initial value: 0
-vx_init=r_0  !  Initial value: 0
-vy_init=r_0  !  Initial value: 0
-vz_init=r_0  !  Initial value: 0
-num_elecs=i_1  !  Initial value: 1
-num_prots=i_0  !  Initial value: 0
-num_neuts=i_0  !  Initial value: 0
-
-B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
 
 !-----------------------------------------------------------------------
 ! Read array namelist (filename specified in mbp_inp_mod)
 !-----------------------------------------------------------------------
-  
-  IF (part_nml_in_exists) THEN
-    OPEN (UNIT=part_nml_in, FILE= part_nml_file_in, STATUS= "OLD", FORM= "FORMATTED")
-    PRINT *, "Namelist opened: ", part_nml_file_in
-    READ (UNIT=part_nml_in, NML= mbp_part_nml)
-    CLOSE (part_nml_in)
-    PRINT *, "Namelist read into memory: ", part_nml_file_in, NEW_LINE('A')
+
+  IF (nlstate_in_exsists) THEN
+    OPEN (UNIT=nlin_unit, FILE= nlin_file, STATUS= "OLD", FORM= "FORMATTED")
+    PRINT *, "Namelist opened: ", nlin_file
+    READ (UNIT=nlin_unit, NML= nlstate)
+    CLOSE (nlin_unit)
+    PRINT *, "Namelist read into memory: ", nlin_file, NEW_LINE('A')
   ELSE
-    PRINT *, "Namelist not found: ", part_nml_file_in, NEW_LINE('A')
-  ENDIF  
+    PRINT *, "Namelist not found: ", nlin_file, NEW_LINE('A')
+  ENDIF
+
+  RETURN
+  END SUBROUTINE mbp_data_load
+
+!=======================================================================
+! The module subroutine mbp_data_init sets initial conditions and
+! tolerance vectors from loaded data
+!=======================================================================
+
+  SUBROUTINE mbp_data_init
   
+  INTEGER(iknd) :: ielem, ioff
+  REAL(rknd), DIMENSION(:), POINTER :: tolptr !Pointer for tolerance of current particle
+  REAL(rknd), DIMENSION(:), POINTER :: p_rprt, p_vptr ! Pointers for radius and velocity of previous element
+  REAL(rknd) :: running_theta     = 0_rknd
+  REAL(rknd) :: running_theta_dot = 0_rknd
+
+  allocate(p_rptr(2))
+  allocate(p_vptr(2))
+  p_rptr = 0_rknd
+  p_vptr = 0_rknd
+
 !-----------------------------------------------------------------------
-! Loop over the particles and use the input specifications or default
+! Loop over the elements and use the input specifications or default
 ! values to assign the data arrays.
 !-----------------------------------------------------------------------
 
-  DO ipart=1,npart
+  DO ielem=1,npart
 
-    pchrg(ipart)=elem_chrg*(num_prots(ipart)-num_elecs(ipart))
-    pmass(ipart)=proton_mass*num_prots(ipart) &
-                +neutron_mass*num_neuts(ipart) &
-                +electron_mass*num_elecs(ipart)
-    qom(ipart)=pchrg(ipart)/pmass(ipart)
+    running_theta = runnng_theta + elem_theta(ielem)
+    ioff = 4 * ielem
 
-    ioff = 6 * ipart
-    rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
-    vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
-    tolptr => mbp_ATOL(ioff-5:ioff)    !Tolerance pointer associated with current particle
+    rptr => sln_vec(ioff-3:ioff-2)  !Position pointer associated with current particle
+    vptr => sln_vec(ioff-1:ioff)    !Velocity pointer associated with current particle
+    tolptr => mbp_ATOL(ioff-3:ioff) !Tolerance pointer associated with current particle
 
-    rptr(1) = x_init(ipart) !Position initial conditions
-    rptr(2) = y_init(ipart)
-    rptr(3) = z_init(ipart)
+    rptr(1) = cos(running_theta) * elem_rad + p_rprt(1)!X
+    rptr(2) = sin(running_theta) * elem_rad + p_rprt(2)!Y
 
-    vptr(1) = vx_init(ipart) !Velicity initial conditions
-    vptr(2) = vy_init(ipart)
-    vptr(3) = vz_init(ipart)
+    vptr(1) = sin(theta_dot(ielem)) * elem_rad + p_vprt(1)!X
+    vptr(2) = cos(theta_dot(ielem)) * elem_rad + p_vprt(2)!Y
 
-    v_part = sqrt(vptr(1) ** 2 + vptr(2) ** 2 + vptr(3) ** 2) !Particle velocity
+    tolptr(1:2) = pos_tolerance !Position tolearnce
+    tolptr(3:4) = vel_tolerance !Velocity tolerance
 
-    tolptr(1:3) = tolerance * ABS( (v_part * pmass(ipart)) /  (pchrg(ipart) / B_mag) )!Position tolearnce
-    tolptr(4:6) = tolerance * v_part!Velocity tolerance
+    p_rptr => rptr
+    p_vptr => vptr
 
   ENDDO
-  RETURN
+
   END SUBROUTINE mbp_data_init
-  
-  
+
 !=======================================================================
 ! The module subroutine mbp_data_term reparses the final state into 
 ! the original _init variables and writes them to the output namelist
@@ -160,25 +142,25 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
 
   SUBROUTINE mbp_data_term
   
-  INTEGER(iknd) :: ipart, ioff
+  INTEGER(iknd) :: ielem, ioff
 
 !-----------------------------------------------------------------------
 ! Loop over the particles and reset IC variable from solution vector
 !-----------------------------------------------------------------------
 
-  DO ipart=1,npart
+  DO ielem=1,npart
 
-    ioff = 6 * ipart
+    ioff = 6 * ielem
     rptr => sln_vec(ioff-5:ioff-3) !Position pointer associated with current particle
     vptr => sln_vec(ioff-2:ioff)   !Velocity pointer associated with current particle
 
-    x_init(ipart) = rptr(1) !Position initial conditions
-    y_init(ipart) = rptr(2) 
-    z_init(ipart) = rptr(3) 
+    x_init(ielem) = rptr(1) !Position initial conditions
+    y_init(ielem) = rptr(2) 
+    z_init(ielem) = rptr(3) 
 
-    vx_init(ipart) = vptr(1) !Velicity initial conditions
-    vy_init(ipart) = vptr(2)
-    vz_init(ipart) = vptr(3)
+    vx_init(ielem) = vptr(1) !Velicity initial conditions
+    vy_init(ielem) = vptr(2)
+    vz_init(ielem) = vptr(3)
 
   ENDDO  
   
@@ -205,7 +187,7 @@ B_mag = sqrt(bx ** 2 + by ** 2 + bz ** 2)
     "Written for the Final Project of EP-476", &
     repeat(" ", 20), "|"
   PRINT *, "|", repeat(" ", 27), &
-    "Last updated 2020-05-05", &
+    "Last updated 2020-05-06", &
     repeat(" ", 27), "|"
   PRINT *, repeat("=", 79), NEW_LINE('A')
   

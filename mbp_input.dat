@@ -9,12 +9,12 @@
 ! Variables that can be set by this namlist and their definitions:
 !
 ! Element properties:
-!   rad, mass - Real arrays with a default value of 0
+!   elem_rad, elem_mass - Real arrays with a default value of 0
 !
 ! Initial state:
-!   theta_init, theta_dot_init - Real arrays with a default value of 0
+!   elem_theta, elem_theta_dot - Real arrays with a default value of 0
 !=======================================================================
 
 &nlstate
-rad = 1/
+elem_rad = 1/
 !Clear EOF

@@ -21,7 +21,9 @@
 !   nstep - Int with a default value of 1
 !
 ! Tolerance for Abrams and BDF integrators
-!   tolerance - Real with a default value of 1.e-9
+!   rel_tolerance - Real with a default value of 1.e-9
+!   pos_tolerance - Real with a default value of 1.e-3
+!   vel_tolerance - Real with a default value of 1.e-3
 !
 ! Number of plotting steps:
 !   t_plot - Int with a default value of 1

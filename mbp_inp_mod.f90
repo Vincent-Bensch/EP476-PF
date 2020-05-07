@@ -33,12 +33,11 @@
 ! Polar components.  The integer parameter npart_max is used to
 ! declare these initial-value arrays. 
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: rad
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: mass
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_mass         ! mass of element
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_rad          ! radius from previous element
 
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_init
-  REAL(rknd), DIMENSION(:), ALLOCATABLE :: theta_dot_init
-
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta        ! angle relative to previous element
+  REAL(rknd), DIMENSION(:), ALLOCATABLE :: elem_theta_dot    ! charge to mass ratio
 
 ! The following set of parameters influence the choice and operation
 ! of the numerical method used to solve the ODE system.
@@ -61,7 +60,10 @@
 
   CHARACTER(32) :: integrator="RK4"
   INTEGER(iknd) :: nstep=i_1  !  Initial value: 1
-  REAL(rknd) :: tolerance=1.e-9_rknd
+
+  REAL(rknd) :: rel_tolerance = 1.e-9_rknd ! Global relative tolerance
+  REAL(rknd) :: pos_tolerance = 1.e-3_rknd ! Position absolute tolerance
+  REAL(rknd) :: vel_tolerance = 1.e-3_rknd ! Velocity absolute tolerance
 
 ! The t_plot is the time interval between writing output for
 ! visualization.  For single-step integration methods, the number
