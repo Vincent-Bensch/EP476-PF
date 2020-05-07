@@ -132,7 +132,7 @@
     tolptr(1:2) = pos_tolerance !Position tolearnce
     tolptr(3:4) = vel_tolerance !Velocity tolerance
 
-    CALL update_pre_ptr
+    CALL update_pre_ptrs
 
   ENDDO
 
@@ -161,13 +161,13 @@
     rptr => sln_vec(ioff-3:ioff-2)  !Position pointer relative to the previous particle
     vptr => sln_vec(ioff-1:ioff)    !Position pointer relative to the previous particle
 
-    CALL update_rel_ptr
+    CALL update_rel_ptrs
 
     elem_theta = atan2(rptr(2), rptr(1))
     elem_theta_dot = (rptr(1) * vptr(2) - vptr(1) * rptr(2)) /&
                    & (rptr(1) ** 2 + rptr(2) ** 2)
 
-    CALL update_pre_ptr
+    CALL update_pre_ptrs
 
   ENDDO
 
@@ -222,22 +222,22 @@
 ! The module subroutine update_pre_ptr updates the relative solution vector pointers
 !=======================================================================
 
-  SUBROUTINE update_pre_ptr
+  SUBROUTINE update_pre_ptrs
 
   pre_rptr = rptr
   pre_vptr = vptr
 
-  END SUBROUTINE update_pre_ptr
+  END SUBROUTINE update_pre_ptrs
 
 !=======================================================================
 ! The module subroutine update_rel_ptr updates the relative solution vector pointers
 !=======================================================================
 
-  SUBROUTINE update_rel_ptr
+  SUBROUTINE update_rel_ptrs
 
   rel_rptr = rptr - pre_rptr
   rel_vptr = vptr - pre_rptr
 
-  END SUBROUTINE update_rel_ptr
+  END SUBROUTINE update_rel_ptrs
 
   END MODULE mbp_data_mod
