@@ -58,6 +58,7 @@ t_curr = T
 
 DO istep=1,NUM_STEPS
   CALL F( NEQ, t_curr, Y, k1)
+
   d1 = k1 * tstep
   
   CALL F( NEQ, t_curr + htstep, Y + d1/2., k1)

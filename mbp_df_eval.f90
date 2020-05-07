@@ -23,7 +23,7 @@
 
   CALL reset_ptrs
 
-
+  dfvec = 0_rknd
 
   RETURN
 
