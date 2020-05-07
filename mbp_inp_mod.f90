@@ -25,7 +25,7 @@
 ! The next set defines run-time specification of physical parameters
 ! for a particular computation.
 
-  INTEGER(iknd) :: nelem     = i_1 ! # of elements, Initial value: 1
+  INTEGER(iknd) :: nelem     = 2_iknd ! # This version of hte program restricted to 2 elements
   REAL(rknd)    :: t_initial = r_0 ! Initial value: 0
   REAL(rknd)    :: t_final   = r_1 ! Initial value: 1
 
@@ -62,8 +62,8 @@
   INTEGER(iknd) :: nstep=i_1  !  Initial value: 1
 
   REAL(rknd) :: rel_tolerance = 1.e-9_rknd ! Global relative tolerance
-  REAL(rknd) :: pos_tolerance = 1.e-3_rknd ! Position absolute tolerance
-  REAL(rknd) :: vel_tolerance = 1.e-3_rknd ! Velocity absolute tolerance
+  REAL(rknd) :: theta_tolerance = 1.e-3_rknd ! Position absolute tolerance
+  REAL(rknd) :: omega_tolerance = 1.e-3_rknd ! Velocity absolute tolerance
 
 ! The t_plot is the time interval between writing output for
 ! visualization.  For single-step integration methods, the number
@@ -75,13 +75,13 @@
 !Namelist variable assignments
 
   NAMELIST / nlparam / &                !Parameter namelist input 
-    nelem, t_initial, t_final, &        !Physical parameters
+    t_initial, t_final, &               !Physical parameters
     integrator, nstep, rel_tolerance, & !Integrator Settings
-    pos_tolerance, vel_tolerance, &     !Bonus integrator settings
+    theta_tolerance, omega_tolerance, &     !Bonus integrator settings
     t_plot                              !Plot settings
 
   NAMELIST / nlstate / &       !IC namelist input/output
     elem_rad, elem_mass, &     !Physical parameters
-    elem_theta, elem_theta_dot !Initial positions and velocities
+    elem_theta, elem_omega !Initial positions and velocities
 
   END MODULE mbp_inp_mod

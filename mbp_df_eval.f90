@@ -15,57 +15,45 @@
 
   INTEGER(iknd), INTENT(IN) :: nsize ! size of the ODE system
   REAL(rknd), INTENT(IN) :: time ! current value of ind. variable
-  REAL(rknd), DIMENSION(nsize), TARGET, INTENT(IN) :: svec_in ! current ‘solution’ vector
+  REAL(rknd), DIMENSION(nsize), TARGET, INTENT(IN) :: svec! current ‘solution’ vector
   REAL(rknd), DIMENSION(nsize), TARGET, INTENT(OUT) :: dfvec ! will hold the derivative-function vector upon return
 
-  REAL(rknd), DIMENSION(nelem + 1, 3) :: t_elem = 0_rknd !Tention in linkage from element n to element n-1 (x_comp, ycomp, mag)
+  REAL(rknd) :: C1, TD, N1, N2, STD, CTD
 
-  REAL(rknd) :: lt_prev = 0_rknd
-  REAL(rknd) :: lt_next = 0_rknd
+  REAL(rknd), DIMENSION(:), POINTER :: theta_in
+  REAL(rknd), DIMENSION(:), POINTER :: theta_dot_out
+  REAL(rknd), DIMENSION(:), POINTER :: omega_in
+  REAL(rknd), DIMENSION(:), POINTER :: omega_dot_out
 
-  CALL reset_ptrs
+  theta_in(1) => svec(1)
+  omega_in(1) => svec(2)
+  theta_in(2) => svec(3)
+  omega_in(2) => svec(4)
 
-  DO ielem = nelem, 1 !Loop though elements
+  theta_dot_out(1) => dfvec(1)
+  omega_dot_out(1) => dfvec(2)
+  theta_dot_out(2) => dfvec(3)
+  omega_dot_out(2) => dfvec(4)
 
-!-----------------------------------------------------------------------
-! Index pointers are advanced.
-!-----------------------------------------------------------------------
+  theta_dot_out = omega_in
 
-    ioff = 4 * (ielem + 1)
+  TD = theta_in(1) - theta_in(2)
+  STD = sin(TD)
+  CTD = cos(TD)
 
-    rptr => svec(ioff-3:ioff-2)       !Position pointer associated with current element
-    nxt_rptr => svec(ioff-7:ioff-6)   !Position pointer associated with next element
-    rel_rptr => nxt_rptr - rptr       !Vector from current to next element
+  C1 = 2 * elem_mass(1) + elem_mass(2) - elem_mass(2) * cos(2 * TD)
 
-    vptr => svec(ioff-1:ioff)     !Velocity pointer associated with current element
+  N1 = -grav_accel * (2 * elem_mass(1) + elem_mass(2) ) * sin(theta_in(1)) &
+       - elem_mass(2) * grav_accel * sin(theta_in(1) - 2 * theta_in(2)) &
+       - 2 * STD * elem_mass(2) * (omega_in(2) ** 2 * elem_rad(2) &
+       + omega_in(1) ** 2 * elem_rad(1) * CTD)
 
-    drptr => dfvec(ioff-3:ioff-2) !Derivative of position pointer associated with current element
-    dvptr => dfvec(ioff-1:ioff)   !Derivative of velocity pointer associated with current element
+  N2 = 2 * STD * (omega_in(1) ** 2 * elem_rad(1) * (elem_mass(1) + elem_mass(2)) &
+       + grav_accel * (elem_mass(1) + elem_mass(2)) * cos(theta_in(1) &
+       + omega_in(2) ** 2 * elem_rad(2) * elem_mass(2) * CTD
 
-    rptr => svec(ioff-3:ioff-2)   !Position pointer associated with current element
-    vptr => svec(ioff-1:ioff)     !Velocity pointer associated with current element
-
-!-----------------------------------------------------------------------
-! The derrivative function of position is set the current 'solution' velocity
-!-----------------------------------------------------------------------
-
-    drptr(1) = vptr(1)
-    drptr(2) = vptr(2)
-
-!-----------------------------------------------------------------------
-! Compute linkage tention
-!-----------------------------------------------------------------------
-
-    t_elem(ielem, 2) = (rel_rptr(2) / elem_rad(ielem)) * grav_accel
-
-!-----------------------------------------------------------------------
-! Evaluate the acceleration at ielem from gravitational vector, and linkages
-!-----------------------------------------------------------------------
-
-    dvptr(1) = (t_elem(ielem, 1) - t_elem(ielem - 1, 1)) / elem_mass(ielem)
-    dvptr(2) = (t_elem(ielem, 2) - t_elem(ielem - 1, 2)) / elem_mass(ielem) - grav_accel
-
-  ENDDO
+  omega_dot_out(1) = N1 / (elem_rad(1) * C1)
+  omega_dot_out(2) = N2 / (elem_rad(2) * C1)
 
   RETURN
 

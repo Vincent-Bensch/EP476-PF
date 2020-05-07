@@ -9,7 +9,6 @@
 ! Variables that can be set by this namlist and their definitions:
 !
 ! Physical parameters:
-!   nelelm(actual number of elements) - Int with a default value of 1
 !   t_initial(start time) - Real with a default value of 0
 !   t_final(end time) - Real with a default value of 1
 !
@@ -22,15 +21,14 @@
 !
 ! Tolerance for Abrams and BDF integrators
 !   rel_tolerance - Real with a default value of 1.e-9
-!   pos_tolerance - Real with a default value of 1.e-3
-!   vel_tolerance - Real with a default value of 1.e-3
+!   theta_tolerance - Real with a default value of 1.e-3
+!   omega_tolerance - Real with a default value of 1.e-3
 !
 ! Number of plotting steps:
 !   t_plot - Int with a default value of 1
 !=======================================================================
 
 &nlparam
-nelem = 1 
 t_initial = 0
 t_final = 10
 nstep = 1000/

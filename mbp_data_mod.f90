@@ -15,29 +15,10 @@
 
   IMPLICIT NONE
 
-  REAL(rknd), DIMENSION(:), POINTER :: rptr     ! Pointer for cartesian position of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: vptr     ! Pointer for cartesian velocity of current particle
-
-  REAL(rknd), DIMENSION(:), POINTER :: drptr    ! Pointer for cartesian position derivative of current particle
-  REAL(rknd), DIMENSION(:), POINTER :: dvptr    ! Pointer for cartesian velocity derivative of current particle
-
-  REAL(rknd), DIMENSION(:), POINTER :: pre_rptr ! Pointer for radius of previous element
-  REAL(rknd), DIMENSION(:), POINTER :: pre_vptr ! Pointer for velocity of previous element
-
-  REAL(rknd), DIMENSION(:), POINTER :: nxt_rptr ! Pointer for radius relative to previous element
-  REAL(rknd), DIMENSION(:), POINTER :: nxt_vptr ! Pointer for velocity relative to previous element
-
-  REAL(rknd), DIMENSION(:), POINTER :: rel_rptr ! Pointer for radius relative to previous element
-  REAL(rknd), DIMENSION(:), POINTER :: rel_vptr ! Pointer for velocity relative to previous element
-
   REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: sln_vec   !Solution vector
-
-  REAL(rknd), DIMENSION(2) :: sys_pe !System potential energy (previous, current)
-  REAL(rknd), DIMENSION(2) :: sys_ke !System potential energy (previous, current)
 
   INTEGER(iknd) :: num_eqs !Number of equations in system, and len of sln_vec
   REAL(rknd), DIMENSION(:), ALLOCATABLE, TARGET :: mbp_ATOL !Absolute tolerance vector
-
 
   CONTAINS
 
@@ -71,21 +52,15 @@
 ! Allocate the arrays for the number of elements in the pendulum.
 !-----------------------------------------------------------------------
 
-  num_eqs = 4 * (nelem + 1)
+  num_eqs = 4_iknd
 
   ALLOCATE(elem_mass(nelem))
   ALLOCATE(elem_rad(nelem))
   ALLOCATE(elem_theta(nelem))
-  ALLOCATE(elem_theta_dot(nelem))
+  ALLOCATE(elem_omega(nelem))
 
   ALLOCATE(sln_vec(1:num_eqs))
   ALLOCATE(mbp_ATOL(num_eqs))
-
-  allocate(pre_rptr(2))
-  allocate(pre_vptr(2))
-
-  allocate(rel_rptr(2))
-  allocate(rel_vptr(2))
 
 !-----------------------------------------------------------------------
 ! Read array namelist (filename specified in mbp_inp_mod)
@@ -110,38 +85,20 @@
 !=======================================================================
 
   SUBROUTINE mbp_data_init
-  
-  INTEGER(iknd) :: ielem, ioff
-  REAL(rknd), DIMENSION(:), POINTER :: tolptr !Pointer for tolerance of current particle
-  REAL(rknd) :: running_theta     = 0_rknd
-  REAL(rknd) :: running_theta_dot = 0_rknd
-
-  CALL reset_ptrs
 
 !-----------------------------------------------------------------------
-! Loop over the elements and use the input specifications or default
-! values to assign the data arrays.
+! Setup solution vector from ICs
 !-----------------------------------------------------------------------
 
-  DO ielem=1,nelem
+  svec(1) = elem_theta(1)
+  svec(2) = elem_omega(1)
+  svec(3) = elem_theta(2)
+  svec(4) = elem_omega(2)
 
-    running_theta = running_theta + elem_theta(ielem)
-    ioff = 4 * (ielem + 1)
-
-    rptr => sln_vec(ioff-3:ioff-2)  !Position pointer associated with current particle
-    vptr => sln_vec(ioff-1:ioff)    !Velocity pointer associated with current particle
-    tolptr => mbp_ATOL(ioff-3:ioff) !Tolerance pointer associated with current particle
-
-    rptr(1) = cos(running_theta) * elem_rad(ielem) + pre_rptr(1)!X
-    rptr(2) = sin(running_theta) * elem_rad(ielem) + pre_rptr(2)!Y
-
-    vptr(1) = (-1_rknd) * elem_theta_dot(ielem) * elem_rad(ielem) * sin(running_theta) + pre_vptr(1)!X
-    vptr(2) = elem_theta_dot(ielem) * elem_rad(ielem) * cos(running_theta) + pre_vptr(1)!Y
-
-    tolptr(1:2) = pos_tolerance !Position tolearnce
-    tolptr(3:4) = vel_tolerance !Velocity tolerance
-
-    CALL update_pre_ptrs
+  tolptr(1) = theta_tolerance !Position tolearnce
+  tolptr(3) = theta_tolerance !Position tolearnce
+  tolptr(2) = omega_tolerance !Velocity tolerance
+  tolptr(4) = omega_tolerance !Velocity tolerance
 
   ENDDO
 
@@ -154,30 +111,15 @@
 
   SUBROUTINE mbp_data_term
 
-  INTEGER(iknd) :: ielem, ioff
-
-  CALL reset_ptrs
-
 !-----------------------------------------------------------------------
-! Loop over the particles and reset IC variable from solution vector
+! Create fcs from solution vector
 !-----------------------------------------------------------------------
 
-  DO ielem=1,nelem
+  elem_theta(1) = sln_vec(1)
+  elem_theta(2) = sln_vec(3)
 
-    ioff = 4 * (ielem + 1)
-
-    rptr => sln_vec(ioff-3:ioff-2)  !Position pointer relative to the previous particle
-    vptr => sln_vec(ioff-1:ioff)    !Position pointer relative to the previous particle
-
-    CALL update_rel_ptrs
-
-    elem_theta = atan2(rptr(2), rptr(1))
-    elem_theta_dot = (rptr(1) * vptr(2) - vptr(1) * rptr(2)) /&
-                   & (rptr(1) ** 2 + rptr(2) ** 2)
-
-    CALL update_pre_ptrs
-
-  ENDDO
+  elem_omega(1) = sln_vec(2)
+  elem_omega(2) = sln_vec(4)
 
   OPEN (UNIT=nlout_unit, FILE= nlout_file, STATUS= "REPLACE", FORM= "FORMATTED")
   WRITE (UNIT=nlout_unit, NML= nlstate)
@@ -208,41 +150,5 @@
 
   RETURN
   END SUBROUTINE mbp_welcome
-
-!=======================================================================
-! The module subroutine reset_ptrs resets the solution vector pointers to 0
-!=======================================================================
-
-  SUBROUTINE reset_ptrs
-
-  pre_rptr = 0_rknd
-  pre_vptr = 0_rknd
-
-  rel_rptr = 0_rknd
-  rel_vptr = 0_rknd
-
-  END SUBROUTINE reset_ptrs
-
-!=======================================================================
-! The module subroutine update_pre_ptr updates the relative solution vector pointers
-!=======================================================================
-
-  SUBROUTINE update_pre_ptrs
-
-  pre_rptr = rptr
-  pre_vptr = vptr
-
-  END SUBROUTINE update_pre_ptrs
-
-!=======================================================================
-! The module subroutine update_rel_ptr updates the relative solution vector pointers
-!=======================================================================
-
-  SUBROUTINE update_rel_ptrs
-
-  rel_rptr = rptr - pre_rptr
-  rel_vptr = vptr - pre_rptr
-
-  END SUBROUTINE update_rel_ptrs
 
   END MODULE mbp_data_mod
